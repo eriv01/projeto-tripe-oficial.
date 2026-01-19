@@ -8,29 +8,91 @@
     <style>
         :root { --primary: #ef4444; --bg: #0a0a0a; --card: #141414; --text: #ffffff; --muted: #9ca3af; --border: #262626; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg ); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 15px; }
         
-        /* Mobile First Optimization */
-        .quiz-card { width: 100%; max-width: 450px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-top: 20px; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg ); 
+            color: var(--text); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; /* Centralização Vertical */
+            padding: 20px; 
+        }
         
-        .badge-live { background: rgba(239, 68, 68, 0.1); color: var(--primary); padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 900; display: inline-block; margin-bottom: 15px; border: 1px solid var(--primary); }
+        .quiz-card { 
+            width: 100%; 
+            max-width: 450px; 
+            background: var(--card); 
+            border: 1px solid var(--border); 
+            border-radius: 24px; 
+            padding: 30px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
         
-        h1 { font-size: 26px; font-weight: 900; line-height: 1.2; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -1px; }
+        .fixed-header {
+            font-size: 10px;
+            font-weight: 900;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .badge-live { 
+            background: rgba(239, 68, 68, 0.1); 
+            color: var(--primary); 
+            padding: 6px 14px; 
+            border-radius: 50px; 
+            font-size: 10px; 
+            font-weight: 900; 
+            display: table; 
+            margin: 0 auto 20px auto; 
+            border: 1px solid var(--primary); 
+        }
+        
+        h1 { font-size: 28px; font-weight: 900; line-height: 1.1; margin-bottom: 20px; text-transform: uppercase; text-align: center; }
         h1 span { color: var(--primary); }
         
-        .step-title { font-size: 20px; font-weight: 800; margin-bottom: 20px; line-height: 1.3; }
+        .step-title { font-size: 22px; font-weight: 800; margin-bottom: 25px; line-height: 1.2; text-align: center; }
         
-        .options-grid { display: grid; gap: 10px; }
-        .option-item { background: #1a1a1a; border: 1px solid var(--border); border-radius: 12px; padding: 18px; cursor: pointer; text-align: left; width: 100%; color: var(--text); font-size: 16px; font-weight: 700; transition: 0.2s; }
-        .option-item:active { transform: scale(0.98); background: var(--primary); border-color: var(--primary); }
-        .option-item.selected { border-color: var(--primary); background: rgba(239, 68, 68, 0.1); }
+        .options-grid { display: grid; gap: 12px; }
+        .option-item { 
+            background: #1a1a1a; 
+            border: 1px solid var(--border); 
+            border-radius: 14px; 
+            padding: 20px; 
+            cursor: pointer; 
+            text-align: center; 
+            width: 100%; 
+            color: var(--text); 
+            font-size: 17px; 
+            font-weight: 700; 
+            transition: 0.2s; 
+        }
+        .option-item:active { transform: scale(0.97); background: var(--primary); }
 
-        .cta-btn { background: var(--primary); color: white; width: 100%; padding: 20px; border-radius: 12px; font-size: 18px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; margin-top: 20px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3); }
+        .cta-btn { 
+            background: var(--primary); 
+            color: white; 
+            width: 100%; 
+            padding: 22px; 
+            border-radius: 14px; 
+            font-size: 18px; 
+            font-weight: 900; 
+            border: none; 
+            cursor: pointer; 
+            text-transform: uppercase; 
+            margin-top: 25px; 
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); 
+        }
         
-        .progress-bar { height: 4px; background: var(--border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .progress-bar { height: 5px; background: var(--border); border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.4s; }
         
-        .footer-text { font-size: 11px; color: var(--muted); text-align: center; margin-top: 20px; line-height: 1.4; }
+        .footer-text { font-size: 11px; color: var(--muted); text-align: center; margin-top: 25px; font-weight: 600; }
         
         .loader { border: 3px solid var(--border); border-top: 3px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -105,7 +167,7 @@
                 app.innerHTML = `
                     <div class="badge-live">● AO VIVO: 1.247 HOMENS ONLINE</div>
                     <h1>${COPY_VARIANTS.saudacao[selectedVariants.saudacao]}</h1>
-                    <p style="color: var(--muted); margin-bottom: 20px; font-weight: 600;">Responda o diagnóstico rápido para liberar seu protocolo de aumento.</p>
+                    <p style="color: var(--muted); margin-bottom: 25px; font-weight: 600; text-align: center; font-size: 14px;">Responda o diagnóstico rápido para liberar seu protocolo de aumento.</p>
                     <button class="cta-btn" onclick="window.next()">INICIAR AGORA</button>
                     <p class="footer-text">🔒 Seus dados são 100% sigilosos e seguros.</p>
                 `;
@@ -128,13 +190,14 @@
             const id = ['tamanho', 'erecao', 'metodo', 'dieta', 'sono', 'treino', 'idade'][qIdx];
 
             const progress = Math.round((currentStep / 7) * 100);
-            let optionsHtml = options.map(opt => `<button class="option-item ${answers[id] === opt ? 'selected' : ''}" onclick="window.selectOption('${id}', '${opt}')">${opt}</button>`).join('');
+            let optionsHtml = options.map(opt => `<button class="option-item" onclick="window.selectOption('${id}', '${opt}')">${opt}</button>`).join('');
             
             app.innerHTML = `
+                <div class="fixed-header">AVALIAÇÃO PERSONALIZADA - MÉTODO TRIPE</div>
                 <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>
                 <div class="step-title">${questionText}</div>
                 <div class="options-grid">${optionsHtml}</div>
-                <div class="footer-text" style="margin-top: 30px;">Pergunta ${currentStep} de 7</div>
+                <div class="footer-text">Pergunta ${currentStep} de 7</div>
             `;
             trackStep(currentStep, 'Pergunta ' + currentStep);
         }
@@ -144,11 +207,11 @@
             app.innerHTML = `
                 <div style="text-align: center;">
                     <div class="badge-live">DIAGNÓSTICO CONCLUÍDO</div>
-                    <h1 style="font-size: 22px;">${COPY_VARIANTS.resultado[selectedVariants.resultado]}</h1>
-                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; margin: 20px 0;">
-                        <p style="font-size: 14px; color: var(--muted);">Seu potencial de aumento é de:</p>
-                        <div style="font-size: 48px; font-weight: 900; color: var(--primary);">+${ganho} CM</div>
-                        <p style="font-size: 14px; color: var(--muted);">Nos próximos 30 dias.</p>
+                    <h1 style="font-size: 24px;">${COPY_VARIANTS.resultado[selectedVariants.resultado]}</h1>
+                    <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; margin: 25px 0; border: 1px solid var(--border);">
+                        <p style="font-size: 14px; color: var(--muted); font-weight: 600;">Seu potencial de aumento é de:</p>
+                        <div style="font-size: 56px; font-weight: 900; color: var(--primary); margin: 10px 0;">+${ganho} CM</div>
+                        <p style="font-size: 14px; color: var(--muted); font-weight: 600;">Nos próximos 30 dias.</p>
                     </div>
                     <button class="cta-btn" onclick="window.finish()">${COPY_VARIANTS.cta[selectedVariants.cta]}</button>
                     <p class="footer-text">⚠️ O acesso ao protocolo pode expirar em breve.</p>
