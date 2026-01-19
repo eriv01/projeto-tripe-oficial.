@@ -1,12 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Teste Tripe</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico TRIPE - Oficial</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background: black; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }
+        :root { --primary: #ef4444; --primary-dark: #dc2626; --bg-dark: #0a0a0a; --card-bg: #141414; --text-main: #ffffff; --text-muted: #9ca3af; --border: #262626; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark ); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .quiz-card { width: 100%; max-width: 550px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .header { margin-bottom: 32px; }
+        .progress-container { margin-bottom: 12px; }
+        .progress-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .progress-bar { height: 6px; background: var(--border); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
+        h2 { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 24px; }
+        .options-grid { display: grid; gap: 12px; }
+        .option-item { background: transparent; border: 2px solid var(--border); border-radius: 16px; padding: 18px 20px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; text-align: left; width: 100%; color: var(--text-main); font-size: 16px; font-weight: 500; }
+        .option-item:hover { border-color: var(--primary); background: rgba(239, 68, 68, 0.05); }
+        .option-item.selected { border-color: var(--primary); background: rgba(239, 68, 68, 0.1); }
+        .radio-dot { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 50%; margin-right: 16px; position: relative; flex-shrink: 0; }
+        .option-item.selected .radio-dot { border-color: var(--primary); }
+        .option-item.selected .radio-dot::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; background: var(--primary); border-radius: 50%; }
+        .footer { margin-top: 32px; display: flex; gap: 12px; }
+        .btn { padding: 16px 24px; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; }
+        .btn-next { background: var(--primary); color: white; flex: 2; }
+        .btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-back { background: var(--border); color: var(--text-main); flex: 1; }
+        .result-box { text-align: center; }
+        .badge { background: rgba(239, 68, 68, 0.1); color: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 16px; display: inline-block; }
+        .ganho-destaque { font-size: 32px; font-weight: 800; color: var(--primary); margin: 16px 0; }
+        .diagnosis-list { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; text-align: left; margin: 24px 0; }
+        .diagnosis-item { display: flex; gap: 12px; font-size: 14px; margin-bottom: 12px; }
+        .cta-btn { background: var(--primary); color: white; width: 100%; padding: 20px; border-radius: 16px; font-size: 18px; font-weight: 800; border: none; cursor: pointer; box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.4); }
+        .loader { border: 3px solid var(--border); border-top: 3px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 40px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @media (max-width: 480px) { .quiz-card { padding: 24px; border-radius: 0; border: none; background: transparent; box-shadow: none; } body { justify-content: flex-start; padding: 0; } }
     </style>
 </head>
 <body>
-    <h1>O site está funcionando!</h1>
+    <div class="quiz-card" id="app"><div class="loader"></div></div>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, set, update, get, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        const firebaseConfig = {
+            apiKey: "AIzaSyCDYmSVU2xVVuLw0vu3svKI7n4hvdxjW0w",
+            authDomain: "projeto-tripe-oficial.firebaseapp.com",
+            databaseURL: "https://projeto-tripe-oficial-default-rtdb.firebaseio.com",
+            projectId: "projeto-tripe-oficial",
+            storageBucket: "projeto-tripe-oficial.firebasestorage.app",
+            messagingSenderId: "274742031259",
+            appId: "1:274742031259:web:18dc5c086fe3d58b56673e"
+        };
+        const QUESTIONS = [
+            { id: 'tamanho', q: "Qual é o tamanho aproximado do seu pênis ereto?", options: ["Menos de 12 cm", "De 12 a 14 cm", "De 14 a 16 cm", "Mais de 16 cm"] },
+            { id: 'erecao', q: "Você costuma acordar com o pênis ereto?", options: ["Quase nunca", "Raramente", "Às vezes", "Quase sempre"] },
+            { id: 'metodo', q: "Você já tentou algum método natural?", options: ["Nunca ouvi falar", "Já ouvi falar, mas nunca tentei", "Já tentei, mas sem constância", "Sim, fiz com disciplina"] },
+            { id: 'dieta', q: "Como é sua dieta diária?", options: ["Apenas comida lixo", "50% lixo, 50% saudável", "Tento comer bem", "Dieta natural equilibrada"] },
+            { id: 'sono', q: "Quantas horas você dorme por noite?", options: ["Menos de 5 horas", "De 5 a 6 horas", "De 6 a 7 horas", "8 horas ou mais"] },
+            { id: 'treino', q: "Você pratica atividade física?", options: ["Nunca", "1x por semana ou menos", "2 a 3x por semana", "4x ou mais por semana"] },
+            { id: 'idade', q: "Qual é a sua idade?", options: ["Entre 16 e 18 anos", "Entre 19 e 27 anos", "Entre 28 e 36 anos", "Mais de 36 anos"] }
+        ];
+        let db, userRef;
+        let currentStep = 0;
+        let answers = {};
+        let variants = { saudacao: 'A', resultado: 'A', cta: 'A' };
+        const sessionId = 'user_' + Date.now( ) + '_' + Math.random().toString(36).substr(2, 5);
+        async function trackStep(step, name) { if (userRef) await update(userRef, { currentStep: step, stepName: name, lastUpdate: serverTimestamp() }); }
+        async function trackEvent(type, variant) { const r = ref(db, 'ab_testing/variants/' + type + '_' + variant + '/tests'); const snap = await get(r); await update(ref(db, 'ab_testing/variants/' + type + '_' + variant), { tests: (snap.val() || 0) + 1 }); }
+        async function trackConversion(type, variant, field) { const r = ref(db, 'ab_testing/variants/' + type + '_' + variant + '/' + field); const snap = await get(r); await update(ref(db, 'ab_testing/variants/' + type + '_' + variant), { [field]: (snap.val() || 0) + 1 }); }
+        function render() {
+            const app = document.getElementById('app');
+            if (currentStep === QUESTIONS.length) { showResult(app); return; }
+            const item = QUESTIONS[currentStep];
+            const progress = Math.round(((currentStep + 1) / QUESTIONS.length) * 100);
+            let optionsHtml = '';
+            item.options.forEach(opt => {
+                const isSelected = answers[item.id] === opt;
+                optionsHtml += '<button class="option-item ' + (isSelected ? 'selected' : '') + '" onclick="window.selectOption(\'' + item.id + '\', \'' + opt + '\')"><div class="radio-dot"></div>' + opt + '</button>';
+            });
+            app.innerHTML = '<div class="header"><div class="progress-container"><div class="progress-info"><span>Pergunta ' + (currentStep + 1) + ' de ' + QUESTIONS.length + '</span><span>' + progress + '%</span></div><div class="progress-bar"><div class="progress-fill" style="width: ' + progress + '%"></div></div></div><h2>' + item.q + '</h2></div><div class="options-grid">' + optionsHtml + '</div><div class="footer">' + (currentStep > 0 ? '<button class="btn btn-back" onclick="window.prev()">Voltar</button>' : '') + '<button class="btn btn-next" id="nextBtn" ' + (!answers[item.id] ? 'disabled' : '') + ' onclick="window.next()">Próximo</button></div>';
+            trackStep(currentStep + 1, 'Pergunta ' + (currentStep + 1));
+        }
+        function showResult(app) {
+            const ganho = (Math.random() * (5.0 - 1.5) + 1.5).toFixed(1);
+            const problemas = [];
+            if (answers.erecao === "Quase nunca") problemas.push("⚠️ Baixa produção de óxido nítrico detectada.");
+            if (answers.sono === "Menos de 5 horas") problemas.push("⚠️ Bloqueio de GH por privação de sono.");
+            if (answers.dieta === "Apenas comida lixo") problemas.push("⚠️ Inflamação sistêmica impedindo expansão.");
+            const ctaText = variants.cta === 'A' ? "🔥 COMEÇAR PROTOCOLO AGORA" : (variants.cta === 'B' ? "💪 RESOLVER MEU PROBLEMA" : "✅ GARANTIR MEUS RESULTADOS");
+            let probHtml = '';
+            problemas.forEach(p => { probHtml += '<div class="diagnosis-item"><span>' + p + '</span></div>'; });
+            app.innerHTML = '<div class="result-box"><div class="badge">Diagnóstico Concluído</div><h2>Seu Potencial de Crescimento</h2><div class="ganho-destaque">+' + ganho + ' CM</div><p class="subtitle">Em apenas 30 dias com o Método TRIPE</p><div class="diagnosis-list"><p style="font-weight: 700; font-size: 13px; margin-bottom: 15px; color: var(--primary);">BLOQUEIOS IDENTIFICADOS:</p>' + (probHtml || '<div class="diagnosis-item">✅ Seu perfil está pronto para ganhos rápidos!</div>') + '</div><button class="cta-btn" onclick="window.finish()">' + ctaText + '</button><p style="font-size: 11px; color: var(--text-muted); margin-top: 15px;">Garantia incondicional de 30 dias inclusa.</p></div>';
+            ['saudacao', 'resultado', 'cta'].forEach(t => trackConversion(t, variants[t], 'completed'));
+        }
+        async function init() {
+            try {
+                const appInstance = initializeApp(firebaseConfig);
+                db = getDatabase(appInstance);
+                userRef = ref(db, 'sessions/' + sessionId);
+                const vSnap = await get(ref(db, 'ab_testing/variants'));
+                if (vSnap.exists()) {
+                    const vData = vSnap.val();
+                    ['saudacao', 'resultado', 'cta'].forEach(t => {
+                        const active = Object.keys(vData).filter(k => k.startsWith(t + '_') && vData[k].active)[0];
+                        if (active) variants[t] = active.split('_')[1];
+                    });
+                }
+                await set(userRef, { enteredAt: serverTimestamp(), currentStep: 0, status: 'active', variants: variants });
+                ['saudacao', 'resultado', 'cta'].forEach(t => trackEvent(t, variants[t]));
+                render();
+            } catch (e) { console.error(e); render(); }
+        }
+        window.selectOption = (id, val) => { answers[id] = val; render(); };
+        window.next = () => { currentStep++; render(); };
+        window.prev = () => { currentStep--; render(); };
+        window.finish = async () => {
+            if (userRef) {
+                await update(userRef, { currentStep: 99, status: 'converted', lastUpdate: serverTimestamp() });
+                ['saudacao', 'resultado', 'cta'].forEach(t => trackConversion(t, variants[t], 'converted'));
+            }
+            window.location.href = "https://pay.wiapy.com/w-U6oehEBd";
+        };
+        init( );
+    </script>
 </body>
 </html>
