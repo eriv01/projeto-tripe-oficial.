@@ -2,43 +2,38 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnóstico TRIPE - Otimização Ativa</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Protocolo TRIPE - Oficial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #ef4444; --primary-dark: #dc2626; --bg-dark: #0a0a0a; --card-bg: #141414; --text-main: #ffffff; --text-muted: #9ca3af; --border: #262626; }
+        :root { --primary: #ef4444; --bg: #0a0a0a; --card: #141414; --text: #ffffff; --muted: #9ca3af; --border: #262626; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark ); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .quiz-card { width: 100%; max-width: 550px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 32px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-        .header { margin-bottom: 32px; }
-        .progress-container { margin-bottom: 12px; }
-        .progress-info { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
-        .progress-bar { height: 6px; background: var(--border); border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
-        h2 { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 24px; }
-        .options-grid { display: grid; gap: 12px; }
-        .option-item { background: transparent; border: 2px solid var(--border); border-radius: 16px; padding: 18px 20px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; text-align: left; width: 100%; color: var(--text-main); font-size: 16px; font-weight: 500; }
-        .option-item:hover { border-color: var(--primary); background: rgba(239, 68, 68, 0.05); }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg ); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 15px; }
+        
+        /* Mobile First Optimization */
+        .quiz-card { width: 100%; max-width: 450px; background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 25px; margin-top: 20px; }
+        
+        .badge-live { background: rgba(239, 68, 68, 0.1); color: var(--primary); padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 900; display: inline-block; margin-bottom: 15px; border: 1px solid var(--primary); }
+        
+        h1 { font-size: 26px; font-weight: 900; line-height: 1.2; margin-bottom: 20px; text-transform: uppercase; letter-spacing: -1px; }
+        h1 span { color: var(--primary); }
+        
+        .step-title { font-size: 20px; font-weight: 800; margin-bottom: 20px; line-height: 1.3; }
+        
+        .options-grid { display: grid; gap: 10px; }
+        .option-item { background: #1a1a1a; border: 1px solid var(--border); border-radius: 12px; padding: 18px; cursor: pointer; text-align: left; width: 100%; color: var(--text); font-size: 16px; font-weight: 700; transition: 0.2s; }
+        .option-item:active { transform: scale(0.98); background: var(--primary); border-color: var(--primary); }
         .option-item.selected { border-color: var(--primary); background: rgba(239, 68, 68, 0.1); }
-        .radio-dot { width: 20px; height: 20px; border: 2px solid var(--border); border-radius: 50%; margin-right: 16px; position: relative; flex-shrink: 0; }
-        .option-item.selected .radio-dot { border-color: var(--primary); }
-        .option-item.selected .radio-dot::after { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 10px; height: 10px; background: var(--primary); border-radius: 50%; }
-        .footer { margin-top: 32px; display: flex; gap: 12px; }
-        .btn { padding: 16px 24px; border-radius: 14px; font-weight: 700; font-size: 15px; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; }
-        .btn-next { background: var(--primary); color: white; flex: 2; }
-        .btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
-        .btn-back { background: var(--border); color: var(--text-main); flex: 1; }
-        .result-box { text-align: center; }
-        .badge { background: rgba(239, 68, 68, 0.1); color: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 16px; display: inline-block; }
-        .ganho-destaque { font-size: 32px; font-weight: 800; color: var(--primary); margin: 16px 0; }
-        .diagnosis-list { background: rgba(255,255,255,0.03); border-radius: 16px; padding: 20px; text-align: left; margin: 24px 0; }
-        .diagnosis-item { display: flex; gap: 12px; font-size: 14px; margin-bottom: 12px; }
-        .cta-btn { background: var(--primary); color: white; width: 100%; padding: 20px; border-radius: 16px; font-size: 18px; font-weight: 800; border: none; cursor: pointer; box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.4); }
-        .loader { border: 3px solid var(--border); border-top: 3px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 40px auto; }
+
+        .cta-btn { background: var(--primary); color: white; width: 100%; padding: 20px; border-radius: 12px; font-size: 18px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; margin-top: 20px; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3); }
+        
+        .progress-bar { height: 4px; background: var(--border); border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.4s; }
+        
+        .footer-text { font-size: 11px; color: var(--muted); text-align: center; margin-top: 20px; line-height: 1.4; }
+        
+        .loader { border: 3px solid var(--border); border-top: 3px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @media (max-width: 480px) { .quiz-card { padding: 24px; border-radius: 0; border: none; background: transparent; box-shadow: none; } body { justify-content: flex-start; padding: 0; } }
     </style>
 </head>
 <body>
@@ -59,34 +54,34 @@
 
         const COPY_VARIANTS = {
             saudacao: [
-                "🔬 Iniciando Diagnóstico Clínico de Potencial de Expansão...",
-                "🔥 ATENÇÃO: Seu protocolo de crescimento está sendo gerado.",
-                "💪 Descubra agora o quanto você ainda pode crescer naturalmente.",
-                "⚠️ ALERTA: Identificamos bloqueios no seu desenvolvimento.",
-                "✅ Verificação de compatibilidade com o Método TRIPE iniciada."
+                "VOCÊ ESTÁ A UM PASSO DE TER UM <span>PÊNIS MAIOR E MAIS GROSSO</span>",
+                "DESCUBRA COMO <span>AUMENTAR SEU MEMBRO</span> EM ATÉ 5CM NATURALMENTE",
+                "O SEGREDO PARA <span>ENGROSSAR E CRESCER</span> SEU PÊNIS FOI REVELADO",
+                "PARE DE SOFRER COM O TAMANHO: <span>CRESÇA SEU PÊNIS</span> AGORA",
+                "DIAGNÓSTICO DE <span>POTENCIAL PENIANO</span>: VEJA QUANTO PODE CRESCER"
             ],
             questions: [
-                ["Qual o tamanho atual?", "Qual sua medida ereto?", "Qual sua base de partida?", "Quanto você mede hoje?", "Qual sua estatura atual?"],
-                ["Ereção matinal frequente?", "Acorda com 'bom dia'?", "Sente rigidez ao acordar?", "Sua testosterona matinal é alta?", "Tem ereções involuntárias?"],
-                ["Já tentou algo antes?", "Já buscou soluções?", "É sua primeira tentativa?", "Já usou outros métodos?", "Já testou técnicas naturais?"],
-                ["Como é sua alimentação?", "Sua dieta é limpa?", "Come muitos processados?", "Sua nutrição é equilibrada?", "O que você come diariamente?"],
-                ["Dorme quantas horas?", "Seu sono é reparador?", "Descansa o suficiente?", "Qual sua média de sono?", "Dorme bem à noite?"],
-                ["Pratica exercícios?", "É uma pessoa ativa?", "Treina com frequência?", "Faz atividade física?", "Qual seu nível de sedentarismo?"],
-                ["Qual sua faixa etária?", "Quantos anos você tem?", "Qual sua idade atual?", "Em que fase da vida está?", "Qual seu ano de nascimento?"]
+                ["Qual o tamanho do seu pênis ereto hoje?", "Quanto mede seu membro quando está duro?", "Qual sua medida atual de comprimento?", "Qual o tamanho do seu pênis agora?", "Quanto você mede ereto?"],
+                ["Você acorda com o pênis duro?", "Tem ereções matinais fortes?", "Sente o membro rígido ao acordar?", "Sua ereção matinal é frequente?", "Acorda com o pênis ereto?"],
+                ["Já tentou algum método para aumentar?", "Já usou algo para crescer o pênis?", "Já tentou engrossar o membro antes?", "É sua primeira vez tentando aumentar?", "Já buscou aumentar o tamanho?"],
+                ["Sua alimentação é boa ou ruim?", "Você come muita porcaria?", "Sua dieta ajuda ou atrapalha?", "Como está sua nutrição hoje?", "Você come bem no dia a dia?"],
+                ["Dorme bem ou vive cansado?", "Quantas horas você dorme?", "Seu sono é profundo?", "Você descansa o suficiente?", "Dorme mais de 7 horas?"],
+                ["Você faz algum exercício?", "Pratica atividade física?", "Treina com frequência?", "É uma pessoa ativa?", "Faz academia ou esportes?"],
+                ["Qual a sua idade?", "Quantos anos você tem?", "Em que faixa etária está?", "Qual sua idade atual?", "Quantos anos?"],
             ],
             resultado: [
-                "🔬 DIAGNÓSTICO CIENTÍFICO CONCLUÍDO",
-                "🔥 SEU POTENCIAL FOI LIBERADO",
-                "⚠️ BLOQUEIOS CRÍTICOS IDENTIFICADOS",
-                "✅ PROTOCOLO DE EXPANSÃO PRONTO",
-                "💪 RESULTADO DA ANÁLISE DE DESEMPENHO"
+                "🔥 SEU PÊNIS PODE CRESCER MUITO",
+                "🚀 RESULTADO: VOCÊ TEM ALTO POTENCIAL",
+                "⚠️ BLOQUEIOS DE CRESCIMENTO DETECTADOS",
+                "✅ PROTOCOLO DE AUMENTO LIBERADO",
+                "💪 ANÁLISE: PREPARE-SE PARA CRESCER"
             ],
             cta: [
-                "🔥 COMEÇAR PROTOCOLO AGORA",
-                "💪 RESOLVER MEU PROBLEMA",
-                "✅ GARANTIR MEUS RESULTADOS",
-                "🚀 QUERO CRESCER AGORA",
-                "🔓 LIBERAR MEU ACESSO"
+                "🔥 QUERO MEU PÊNIS MAIOR AGORA",
+                "💪 QUERO ENGROSSAR MEU MEMBRO",
+                "🚀 LIBERAR MEU ACESSO AGORA",
+                "✅ QUERO CRESCER 5CM",
+                "🔓 QUERO O MÉTODO AGORA"
             ]
         };
 
@@ -97,21 +92,23 @@
         const sessionId = 'user_' + Date.now( ) + '_' + Math.random().toString(36).substr(2, 5);
 
         async function trackStep(step, name) { if (userRef) await update(userRef, { currentStep: step, stepName: name, lastUpdate: serverTimestamp() }); }
-        
         async function trackMetric(path) {
             const r = ref(db, path);
             const snap = await get(r);
             const val = (snap.val() || 0) + 1;
-            const parentPath = path.substring(0, path.lastIndexOf('/'));
-            const field = path.split('/').pop();
-            await update(ref(db, parentPath), { [field]: val });
+            await update(ref(db, path.substring(0, path.lastIndexOf('/'))), { [path.split('/').pop()]: val });
         }
 
         function render() {
             const app = document.getElementById('app');
-            // TELA DE SAUDAÇÃO (STEP 0)
             if (currentStep === 0) {
-                app.innerHTML = '<div class="result-box"><div class="badge">Diagnóstico TRIPE</div><h2>' + COPY_VARIANTS.saudacao[selectedVariants.saudacao] + '</h2><p>Responda as próximas perguntas para liberar seu resultado personalizado.</p><button class="cta-btn" onclick="window.next()">INICIAR AGORA</button></div>';
+                app.innerHTML = `
+                    <div class="badge-live">● AO VIVO: 1.247 HOMENS ONLINE</div>
+                    <h1>${COPY_VARIANTS.saudacao[selectedVariants.saudacao]}</h1>
+                    <p style="color: var(--muted); margin-bottom: 20px; font-weight: 600;">Responda o diagnóstico rápido para liberar seu protocolo de aumento.</p>
+                    <button class="cta-btn" onclick="window.next()">INICIAR AGORA</button>
+                    <p class="footer-text">🔒 Seus dados são 100% sigilosos e seguros.</p>
+                `;
                 trackStep(0, 'Saudação');
                 return;
             }
@@ -122,27 +119,41 @@
             const options = [
                 ["Menos de 12 cm", "De 12 a 14 cm", "De 14 a 16 cm", "Mais de 16 cm"],
                 ["Quase nunca", "Raramente", "Às vezes", "Quase sempre"],
-                ["Nunca", "Já ouvi falar", "Já tentei", "Sim, com disciplina"],
-                ["Lixo", "50/50", "Saudável", "Equilibrada"],
-                ["< 5h", "5-6h", "6-7h", "8h+"],
-                ["Nunca", "1x/semana", "2-3x/semana", "4x+"],
-                ["16-18", "19-27", "28-36", "36+"]
+                ["Nunca tentei", "Já ouvi falar", "Já tentei", "Sim, com disciplina"],
+                ["Como muita porcaria", "50/50", "Tento comer bem", "Saudável"],
+                ["Menos de 5h", "5h a 6h", "6h a 7h", "8h ou mais"],
+                ["Nunca", "1x por semana", "2 a 3x por semana", "4x ou mais"],
+                ["18 a 25 anos", "26 a 35 anos", "36 a 45 anos", "Mais de 45 anos"]
             ][qIdx];
             const id = ['tamanho', 'erecao', 'metodo', 'dieta', 'sono', 'treino', 'idade'][qIdx];
 
             const progress = Math.round((currentStep / 7) * 100);
-            let optionsHtml = options.map(opt => '<button class="option-item ' + (answers[id] === opt ? 'selected' : '') + '" onclick="window.selectOption(\'' + id + '\', \'' + opt + '\')"><div class="radio-dot"></div>' + opt + '</button>').join('');
+            let optionsHtml = options.map(opt => `<button class="option-item ${answers[id] === opt ? 'selected' : ''}" onclick="window.selectOption('${id}', '${opt}')">${opt}</button>`).join('');
             
-            app.innerHTML = '<div class="header"><div class="progress-container"><div class="progress-info"><span>Pergunta ' + currentStep + ' de 7</span><span>' + progress + '%</span></div><div class="progress-bar"><div class="progress-fill" style="width: ' + progress + '%"></div></div></div><h2>' + questionText + '</h2></div><div class="options-grid">' + optionsHtml + '</div><div class="footer"><button class="btn btn-back" onclick="window.prev()">Voltar</button><button class="btn btn-next" id="nextBtn" ' + (!answers[id] ? 'disabled' : '') + ' onclick="window.next()">Próximo</button></div>';
+            app.innerHTML = `
+                <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>
+                <div class="step-title">${questionText}</div>
+                <div class="options-grid">${optionsHtml}</div>
+                <div class="footer-text" style="margin-top: 30px;">Pergunta ${currentStep} de 7</div>
+            `;
             trackStep(currentStep, 'Pergunta ' + currentStep);
         }
 
         function showResult(app) {
             const ganho = (Math.random() * (5.0 - 1.5) + 1.5).toFixed(1);
-            const ctaText = COPY_VARIANTS.cta[selectedVariants.cta];
-            const resTitle = COPY_VARIANTS.resultado[selectedVariants.resultado];
-            
-            app.innerHTML = '<div class="result-box"><div class="badge">Diagnóstico Concluído</div><h2>' + resTitle + '</h2><div class="ganho-destaque">+' + ganho + ' CM</div><p class="subtitle">Em apenas 30 dias com o Método TRIPE</p><button class="cta-btn" onclick="window.finish()">' + ctaText + '</button></div>';
+            app.innerHTML = `
+                <div style="text-align: center;">
+                    <div class="badge-live">DIAGNÓSTICO CONCLUÍDO</div>
+                    <h1 style="font-size: 22px;">${COPY_VARIANTS.resultado[selectedVariants.resultado]}</h1>
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; margin: 20px 0;">
+                        <p style="font-size: 14px; color: var(--muted);">Seu potencial de aumento é de:</p>
+                        <div style="font-size: 48px; font-weight: 900; color: var(--primary);">+${ganho} CM</div>
+                        <p style="font-size: 14px; color: var(--muted);">Nos próximos 30 dias.</p>
+                    </div>
+                    <button class="cta-btn" onclick="window.finish()">${COPY_VARIANTS.cta[selectedVariants.cta]}</button>
+                    <p class="footer-text">⚠️ O acesso ao protocolo pode expirar em breve.</p>
+                </div>
+            `;
             trackMetric('optimization/variants/resultado_' + selectedVariants.resultado + '/completed');
             trackMetric('optimization/variants/cta_' + selectedVariants.cta + '/completed');
         }
@@ -152,17 +163,14 @@
                 const appInstance = initializeApp(firebaseConfig);
                 db = getDatabase(appInstance);
                 userRef = ref(db, 'sessions/' + sessionId);
-
                 const statsSnap = await get(ref(db, 'optimization/stats/total_sessions'));
                 const totalSessions = (statsSnap.val() || 0) + 1;
                 await update(ref(db, 'optimization/stats'), { total_sessions: totalSessions });
-
                 const variantIdx = Math.floor((totalSessions / 10) % 5);
                 selectedVariants.saudacao = variantIdx;
                 selectedVariants.resultado = variantIdx;
                 selectedVariants.cta = variantIdx;
                 selectedVariants.questions = [variantIdx, variantIdx, variantIdx, variantIdx, variantIdx, variantIdx, variantIdx];
-
                 const winnerSnap = await get(ref(db, 'optimization/winner'));
                 if (winnerSnap.exists()) {
                     const winner = winnerSnap.val();
@@ -170,16 +178,14 @@
                     selectedVariants.resultado = winner.resultado;
                     selectedVariants.cta = winner.cta;
                 }
-
                 await set(userRef, { enteredAt: serverTimestamp(), status: 'active', variants: selectedVariants });
                 trackMetric('optimization/variants/saudacao_' + selectedVariants.saudacao + '/tests');
                 render();
             } catch (e) { console.error(e); render(); }
         }
 
-        window.selectOption = (id, val) => { answers[id] = val; render(); };
+        window.selectOption = (id, val) => { answers[id] = val; window.next(); };
         window.next = () => { currentStep++; render(); };
-        window.prev = () => { currentStep--; render(); };
         window.finish = async () => {
             if (userRef) {
                 await update(userRef, { currentStep: 99, status: 'converted', lastUpdate: serverTimestamp() });
