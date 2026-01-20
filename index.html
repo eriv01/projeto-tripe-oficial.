@@ -9,47 +9,69 @@
         :root { --primary: #ef4444; --bg: #0a0a0a; --card: #141414; --text: #ffffff; --muted: #9ca3af; --border: #262626; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg ); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .quiz-card { width: 100%; max-width: 450px; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
-        .fixed-header { font-size: 10px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+        .quiz-card { width: 100%; max-width: 450px; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); position: relative; }
+        .fixed-header { font-size: 10px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; }
         .progress-bar { height: 4px; background: var(--border); border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease; }
         .question-title { font-size: 24px; font-weight: 900; margin-bottom: 15px; line-height: 1.3; text-align: center; }
+        .question-subtitle { font-size: 14px; color: var(--muted); margin-bottom: 25px; text-align: center; }
         .options-grid { display: grid; gap: 12px; margin-bottom: 25px; }
         .option-btn { background: var(--card); border: 2px solid var(--border); color: var(--text); padding: 16px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; text-align: center; }
         .option-btn:hover { border-color: var(--primary); background: rgba(239, 68, 68, 0.1); }
         .option-btn.selected { border-color: var(--primary); background: rgba(239, 68, 68, 0.2); }
-        .btn-next { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 12px; font-weight: 900; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
+        .btn-next { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: 900; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
         .btn-next:hover { background: #dc2626; }
         .btn-next:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-prev { background: var(--border); color: var(--text); border: none; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 10px; transition: 0.2s; }
-        .processing-screen { display: none; }
-        .processing-screen.active { display: block; }
+        .btn-prev { background: transparent; color: var(--muted); border: none; padding: 10px; cursor: pointer; width: 100%; margin-top: 10px; font-size: 12px; }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Processamento e Prova Social */
         .urgency-badge { background: rgba(239, 68, 68, 0.2); border: 2px solid var(--primary); padding: 10px 15px; border-radius: 50px; display: inline-block; margin-bottom: 25px; font-weight: 900; color: var(--primary); font-size: 13px; }
         .carousel-container { width: 100%; height: 300px; background: #000; border-radius: 20px; margin: 20px 0; overflow: hidden; position: relative; }
-        .carousel-slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 0.5s ease; display: flex; flex-direction: column; }
+        .carousel-slide { position: absolute; width: 100%; height: 100%; opacity: 0; transition: opacity 0.5s ease; }
         .carousel-slide.active { opacity: 1; }
         .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
-        .carousel-caption { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.7); padding: 10px; color: white; }
+        .carousel-caption { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.85); padding: 12px; color: white; text-align: center; }
         .processing-step { margin-bottom: 15px; text-align: left; }
         .step-bar { height: 6px; background: var(--border); border-radius: 10px; overflow: hidden; margin-top: 5px; }
         .step-fill { height: 100%; background: var(--primary); width: 0%; animation: fill 2s ease-in-out infinite; }
         @keyframes fill { 0% { width: 0%; } 50% { width: 100%; } 100% { width: 100%; } }
-        .result-screen { display: none; }
-        .result-screen.active { display: block; }
-        .result-badge { background: var(--primary); color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; font-weight: 900; font-size: 32px; }
-        @media (max-width: 480px) { .quiz-card { padding: 20px; border: none; background: transparent; box-shadow: none; } }
+
+        /* Resultado Final */
+        .result-badge { background: var(--primary); color: white; padding: 20px; border-radius: 15px; margin-bottom: 20px; font-weight: 900; font-size: 32px; text-align: center; }
+        .result-text { font-size: 16px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; text-align: center; }
+        .result-highlight { color: var(--primary); font-weight: 900; }
+        
+        @media (max-width: 480px) {
+            .quiz-card { padding: 25px 20px; border: none; background: transparent; box-shadow: none; }
+            .question-title { font-size: 22px; }
+            .carousel-container { height: 280px; }
+        }
     </style>
 </head>
 <body>
     <div class="quiz-card">
-        <div id="questionsScreen">
+        <!-- TELA 0: SAUDAÇÃO (A/B) -->
+        <div id="salutationScreen" class="screen active">
+            <div class="fixed-header">AVALIAÇÃO PERSONALIZADA - MÉTODO TRIPE</div>
+            <div class="question-title" id="salutationTitle">VOCÊ ESTÁ A UM PASSO...</div>
+            <div class="question-subtitle" id="salutationSubtitle">De descobrir seu verdadeiro potencial sexual</div>
+            <button class="btn-next" onclick="window.next()">INICIAR AGORA</button>
+        </div>
+
+        <!-- TELA 1: PERGUNTAS -->
+        <div id="questionsScreen" class="screen">
             <div class="fixed-header">AVALIAÇÃO PERSONALIZADA - MÉTODO TRIPE</div>
             <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
             <div id="questionContent"></div>
             <button class="btn-next" id="nextBtn" onclick="window.next()" disabled>PRÓXIMA PERGUNTA</button>
             <button class="btn-prev" id="prevBtn" onclick="window.prev()" style="display:none;">← VOLTAR</button>
         </div>
-        <div id="processingScreen" class="processing-screen">
+
+        <!-- TELA 2: PROCESSAMENTO + PROVA SOCIAL -->
+        <div id="processingScreen" class="screen" style="text-align: center;">
             <div class="urgency-badge" id="urgencyBadge">🔥 147 homens avaliando agora</div>
             <div class="fixed-header">PROCESSANDO DADOS...</div>
             <div class="carousel-container">
@@ -66,20 +88,33 @@
                     <div class="carousel-caption"><h4>Felipe, 28 anos</h4><p>+5.1cm em 35 dias</p></div>
                 </div>
             </div>
-            <div class="processing-step"><div class="step-bar"><div class="step-fill"></div></div></div>
-            <p style="font-size: 14px; color: var(--muted );">Analisando seu perfil e comparando com 10.847 casos de sucesso...</p>
+            <div class="processing-step">
+                <div style="font-size: 11px; color: var(--muted ); margin-bottom: 5px;">✓ Analisando tecidos cavernosos...</div>
+                <div class="step-bar"><div class="step-fill"></div></div>
+            </div>
+            <div class="processing-step">
+                <div style="font-size: 11px; color: var(--muted); margin-bottom: 5px;">⏳ Calculando limite de expansão...</div>
+                <div class="step-bar"><div class="step-fill" style="animation-delay: 0.5s;"></div></div>
+            </div>
+            <p style="font-size: 13px; color: var(--muted); margin-top: 15px;">Comparando com <strong>10.847 casos de sucesso</strong>...</p>
         </div>
-        <div id="resultScreen" class="result-screen">
+
+        <!-- TELA 3: RESULTADO FINAL (A/B) -->
+        <div id="resultScreen" class="screen">
             <div class="fixed-header">SEU RESULTADO PERSONALIZADO</div>
             <div class="result-badge" id="resultBadge">+4.5cm</div>
-            <p style="margin-bottom: 20px;">Você pode alcançar um ganho de <strong id="resultValue" style="color: var(--primary)">+4.5cm</strong> em 30 dias.</p>
-            <div id="blockagesAlert" style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; text-align: left;"></div>
-            <button class="btn-next" onclick="window.finish()">ACESSAR PROTOCOLO TRIPE</button>
+            <div class="result-text" id="resultMainText">
+                Baseado nas suas respostas, você pode alcançar um ganho de <span class="result-highlight" id="resultValue">+4.5cm</span> em <strong>30 dias</strong>.
+            </div>
+            <div id="blockagesAlert" style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--primary); padding: 15px; border-radius: 8px; margin: 20px 0; text-align: left; font-size: 13px; color: var(--muted);"></div>
+            <button class="btn-next" onclick="window.finish()" id="ctaButton">ACESSAR PROTOCOLO TRIPE</button>
         </div>
     </div>
+
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, update, get, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, set, update, get, serverTimestamp, increment } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
         const firebaseConfig = {
             apiKey: "AIzaSyCDYmSVU2xVVuLw0vu3svKI7n4hvdxjW0w",
             authDomain: "projeto-tripe-oficial.firebaseapp.com",
@@ -89,12 +124,24 @@
             messagingSenderId: "274742031259",
             appId: "1:274742031259:web:18dc5c086fe3d58b56673e"
         };
+
         const app = initializeApp(firebaseConfig );
         const db = getDatabase(app);
         let userRef = null;
-        let currentStep = 0;
+        let currentStep = -1;
+        let selectedVariants = { saudacao: 0, resultado: 0, cta: 0 };
         let answers = {};
         let sessionId = 'session_' + Date.now();
+        let stepStartTime = 0;
+
+        const SALUTATIONS = [
+            { title: "VOCÊ ESTÁ A UM PASSO...", subtitle: "De descobrir seu verdadeiro potencial sexual" },
+            { title: "ESPERA ABRINDO...", subtitle: "Seu diagnóstico de ganho peniano personalizado" },
+            { title: "CARREGANDO PROTOCOLO...", subtitle: "Que vai transformar sua vida sexual" },
+            { title: "INICIANDO AVALIAÇÃO...", subtitle: "Baseada em 10.847 casos de sucesso" },
+            { title: "PREPARANDO RESULTADO...", subtitle: "Que vai surpreender você" }
+        ];
+
         const QUESTIONS = [
             { id: 'ereção', title: 'Qual sua frequência de ereção matinal?', options: ['Quase nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
             { id: 'sono', title: 'Quantas horas você dorme por noite?', options: ['Menos de 5h', '5-6h', '6-7h', '7-8h', 'Mais de 8h'] },
@@ -104,8 +151,32 @@
             { id: 'desempenho', title: 'Como é seu desempenho sexual?', options: ['Muito ruim', 'Ruim', 'Médio', 'Bom', 'Excelente'] },
             { id: 'duracao', title: 'Quanto tempo você dura na cama?', options: ['Menos de 2min', '2-5min', '5-10min', '10-15min', 'Mais de 15min'] }
         ];
-        window.render = function() {
-            if (currentStep < QUESTIONS.length) {
+
+        const RESULTS_COPY = [
+            "Baseado nas suas respostas, você pode alcançar um ganho de {val} em 30 dias.",
+            "Diagnóstico concluído: Seu potencial de crescimento é de {val} com o Método TRIPE.",
+            "ATENÇÃO: Você tem um potencial reprimido de {val}. Libere-o agora.",
+            "Resultado: Seu membro pode atingir {val} extras seguindo o protocolo.",
+            "Parabéns! Identificamos que você pode ganhar {val} em apenas 4 semanas."
+        ];
+
+        const CTA_COPY = [
+            "ACESSAR PROTOCOLO TRIPE",
+            "QUERO MEU MEMBRO MAIOR AGORA",
+            "LIBERAR ACESSO AO MÉTODO",
+            "COMEÇAR MINHA TRANSFORMAÇÃO",
+            "SIM! QUERO AUMENTAR MEU PÊNIS"
+        ];
+
+        function render() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            
+            if (currentStep === -1) {
+                const sal = SALUTATIONS[selectedVariants.saudacao];
+                document.getElementById('salutationTitle').textContent = sal.title;
+                document.getElementById('salutationSubtitle').textContent = sal.subtitle;
+                document.getElementById('salutationScreen').classList.add('active');
+            } else if (currentStep < QUESTIONS.length) {
                 const q = QUESTIONS[currentStep];
                 document.getElementById('progressFill').style.width = ((currentStep + 1) / QUESTIONS.length * 100) + '%';
                 let html = `<div class="question-title">${q.title}</div><div class="options-grid">`;
@@ -117,45 +188,72 @@
                 document.getElementById('questionContent').innerHTML = html;
                 document.getElementById('nextBtn').disabled = answers[q.id] === undefined;
                 document.getElementById('prevBtn').style.display = currentStep > 0 ? 'block' : 'none';
-                document.getElementById('questionsScreen').style.display = 'block';
-                document.getElementById('processingScreen').classList.remove('active');
-                document.getElementById('resultScreen').classList.remove('active');
+                document.getElementById('questionsScreen').classList.add('active');
+                stepStartTime = Date.now();
             } else if (currentStep === QUESTIONS.length) {
-                document.getElementById('questionsScreen').style.display = 'none';
                 document.getElementById('processingScreen').classList.add('active');
                 let slide = 0;
-                setInterval(() => {
+                const interval = setInterval(() => {
                     const slides = document.querySelectorAll('.carousel-slide');
-                    if(slides.length > 0) {
-                        slides.forEach(s => s.classList.remove('active'));
-                        slide = (slide + 1) % slides.length;
-                        slides[slide].classList.add('active');
-                    }
-                }, 3000);
-                setTimeout(() => { currentStep++; window.render(); }, 5000);
+                    if(!slides.length) return clearInterval(interval);
+                    slides.forEach(s => s.classList.remove('active'));
+                    slide = (slide + 1) % slides.length;
+                    slides[slide].classList.add('active');
+                }, 2500);
+                setTimeout(() => { clearInterval(interval); currentStep++; render(); }, 6000);
             } else {
-                document.getElementById('processingScreen').classList.remove('active');
+                let score = 5.0;
+                if (answers['ereção'] <= 1) score -= 0.5;
+                if (answers['sono'] <= 1) score -= 1.0;
+                if (answers['dieta'] <= 1) score -= 0.5;
+                score = Math.max(2.5, score);
+                
+                const valStr = `+${score.toFixed(1)}cm`;
+                document.getElementById('resultBadge').textContent = valStr;
+                document.getElementById('resultValue').textContent = valStr;
+                document.getElementById('resultMainText').innerHTML = RESULTS_COPY[selectedVariants.resultado].replace('{val}', `<span class="result-highlight">${valStr}</span>`);
+                document.getElementById('ctaButton').textContent = CTA_COPY[selectedVariants.cta];
+                document.getElementById('blockagesAlert').innerHTML = score < 4.5 ? '<strong>⚠️ BLOQUEIO DETECTADO:</strong> Seus hábitos atuais estão impedindo o crescimento natural.' : '<strong>✅ PERFIL IDEAL:</strong> Você tem alta compatibilidade para ganho máximo.';
                 document.getElementById('resultScreen').classList.add('active');
-                let score = 5;
-                if (answers['ereção'] <= 1) score -= 1;
-                if (answers['sono'] <= 1) score -= 1;
-                score = Math.max(2, score);
-                document.getElementById('resultBadge').textContent = `+${score.toFixed(1)}cm`;
-                document.getElementById('resultValue').textContent = `+${score.toFixed(1)}cm`;
-                document.getElementById('blockagesAlert').innerHTML = score < 4 ? '⚠️ Bloqueio detectado em sua rotina.' : '✅ Perfil ideal para ganho máximo.';
             }
+        }
+
+        window.selectOption = (id, val) => { 
+            const hesitation = Date.now() - stepStartTime;
+            answers[id] = val; 
+            update(ref(db, `optimization/metrics/hesitation/${currentStep}`), { [sessionId]: hesitation });
+            window.next(); 
         };
-        window.selectOption = (id, val) => { answers[id] = val; window.render(); };
-        window.next = () => { currentStep++; window.render(); };
-        window.prev = () => { if(currentStep > 0) { currentStep--; window.render(); } };
+        window.next = () => { currentStep++; render(); if(userRef) update(userRef, { currentStep, lastUpdate: serverTimestamp() }); };
+        window.prev = () => { if(currentStep > -1) { currentStep--; render(); } };
         window.finish = async () => {
-            if (userRef) await update(userRef, { currentStep: 99, status: 'converted', lastUpdate: serverTimestamp() });
+            if (userRef) {
+                await update(userRef, { currentStep: 99, status: 'converted', lastUpdate: serverTimestamp() });
+                await update(ref(db, `optimization/variants/saudacao_${selectedVariants.saudacao}`), { converted: increment(1) });
+                await update(ref(db, `optimization/variants/resultado_${selectedVariants.resultado}`), { converted: increment(1) });
+                await update(ref(db, `optimization/variants/cta_${selectedVariants.cta}`), { converted: increment(1) });
+            }
             window.location.href = "https://pay.wiapy.com/w-U6oehEBd";
         };
+
         async function init( ) {
-            userRef = ref(db, 'sessions/' + sessionId);
-            await set(userRef, { enteredAt: serverTimestamp(), status: 'active' });
-            window.render();
+            try {
+                const vSnap = await get(ref(db, 'optimization/variants'));
+                if (vSnap.exists()) {
+                    const v = vSnap.val();
+                    ['saudacao', 'resultado', 'cta'].forEach(t => {
+                        const active = [0,1,2,3,4].filter(i => v[t+'_'+i] && v[t+'_'+i].active);
+                        if(active.length) selectedVariants[t] = active[Math.floor(Math.random()*active.length)];
+                    });
+                }
+                const wSnap = await get(ref(db, 'optimization/winner'));
+                if (wSnap.exists()) selectedVariants = wSnap.val();
+
+                userRef = ref(db, 'sessions/' + sessionId);
+                await set(userRef, { enteredAt: serverTimestamp(), status: 'active', variants: selectedVariants });
+                ['saudacao', 'resultado', 'cta'].forEach(t => update(ref(db, `optimization/variants/${t}_${selectedVariants[t]}`), { tests: increment(1) }));
+                render();
+            } catch (e) { console.error(e); render(); }
         }
         init();
     </script>
