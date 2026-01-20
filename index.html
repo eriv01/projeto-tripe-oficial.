@@ -18,8 +18,6 @@
         .option-btn { background: var(--card); border: 2px solid var(--border); color: var(--text); padding: 16px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
         .option-btn.selected { border-color: var(--primary); background: rgba(239, 68, 68, 0.2); }
         .btn-next { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: 900; cursor: pointer; width: 100%; font-size: 16px; }
-        
-        /* BLOCO DE PROVA SOCIAL E PROCESSAMENTO */
         .screen { display: none; }
         .screen.active { display: block; }
         .urgency-badge { background: rgba(239, 68, 68, 0.2); border: 2px solid var(--primary); padding: 10px 15px; border-radius: 50px; display: inline-block; margin-bottom: 20px; font-weight: 900; color: var(--primary); font-size: 12px; }
@@ -33,32 +31,25 @@
         .loading-bar { height: 6px; background: var(--border); border-radius: 10px; overflow: hidden; }
         .loading-fill { height: 100%; background: var(--primary); width: 0%; animation: load 2s infinite; }
         @keyframes load { 0% { width: 0%; } 50% { width: 100%; } 100% { width: 100%; } }
-
         .result-badge { background: var(--primary); color: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; font-weight: 900; font-size: 28px; }
     </style>
 </head>
 <body>
     <div class="quiz-card">
-        <!-- SAUDAÇÃO -->
         <div id="s-0" class="screen active">
             <div class="fixed-header">AVALIAÇÃO PERSONALIZADA - MÉTODO TRIPE</div>
             <div class="question-title">VOCÊ ESTÁ A UM PASSO...</div>
             <p style="color: var(--muted); margin-bottom: 25px;">De descobrir seu verdadeiro potencial sexual</p>
             <button class="btn-next" onclick="next()">INICIAR AGORA</button>
         </div>
-
-        <!-- PERGUNTAS -->
         <div id="s-1" class="screen">
             <div class="fixed-header">AVALIAÇÃO PERSONALIZADA - MÉTODO TRIPE</div>
             <div class="progress-bar"><div class="progress-fill" id="p-fill"></div></div>
             <div id="q-box"></div>
         </div>
-
-        <!-- BLOCO DE PROVA SOCIAL E PROCESSAMENTO (O QUE VOCÊ PEDIU) -->
         <div id="s-2" class="screen">
             <div class="urgency-badge">🔥 164 homens avaliando agora</div>
             <div class="fixed-header">PROCESSANDO SEUS DADOS...</div>
-            
             <div class="carousel">
                 <div class="slide active">
                     <img src="https://metodotripe.shop/wp-content/uploads/2026/01/paciente-D-antes-e-depois-alongamento-peniano-faloplastia-fotor-20260119195743.png">
@@ -73,19 +64,10 @@
                     <div class="slide-info"><strong>Felipe, 28 anos</strong> • +5.1cm em 35 dias</div>
                 </div>
             </div>
-
-            <div class="loading-bar-container">
-                <span class="loading-label">✓ Analisando tecidos cavernosos...</span>
-                <div class="loading-bar"><div class="loading-fill"></div></div>
-            </div>
-            <div class="loading-bar-container">
-                <span class="loading-label">⏳ Calculando limite de expansão...</span>
-                <div class="loading-bar"><div class="loading-fill" style="animation-delay: 0.5s"></div></div>
-            </div>
+            <div class="loading-bar-container"><span class="loading-label">✓ Analisando tecidos cavernosos...</span><div class="loading-bar"><div class="loading-fill"></div></div></div>
+            <div class="loading-bar-container"><span class="loading-label">⏳ Calculando limite de expansão...</span><div class="loading-bar"><div class="loading-fill" style="animation-delay: 0.5s"></div></div></div>
             <p style="font-size: 12px; color: var(--muted ); margin-top: 15px;">Comparando com 10.847 casos de sucesso...</p>
         </div>
-
-        <!-- RESULTADO -->
         <div id="s-3" class="screen">
             <div class="fixed-header">RESULTADO GERADO</div>
             <div class="result-badge" id="res-val">+4.5cm</div>
@@ -93,11 +75,9 @@
             <button class="btn-next" onclick="finish()">ACESSAR PROTOCOLO TRIPE</button>
         </div>
     </div>
-
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getDatabase, ref, set, update, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-
         const firebaseConfig = {
             apiKey: "AIzaSyCDYmSVU2xVVuLw0vu3svKI7n4hvdxjW0w",
             authDomain: "projeto-tripe-oficial.firebaseapp.com",
@@ -107,20 +87,19 @@
             messagingSenderId: "274742031259",
             appId: "1:274742031259:web:18dc5c086fe3d58b56673e"
         };
-
         const app = initializeApp(firebaseConfig );
         const db = getDatabase(app);
         const sid = 's_' + Date.now();
-        let step = 0; 
-        let qIdx = 0;
-        const answers = {};
-
+        let step = 0, qIdx = 0;
         const qs = [
-            { id: 'erecao', t: 'Qual sua frequência de ereção matinal?', o: ['Quase nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
+            { id: 'ereção', t: 'Qual sua frequência de ereção matinal?', o: ['Quase nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
             { id: 'sono', t: 'Quantas horas você dorme por noite?', o: ['Menos de 5h', '5-6h', '6-7h', '7-8h', 'Mais de 8h'] },
-            { id: 'dieta', t: 'Como é sua alimentação?', o: ['Muito ruim', 'Ruim', 'Média', 'Boa', 'Excelente'] }
+            { id: 'dieta', t: 'Como é sua alimentação?', o: ['Muito ruim', 'Ruim', 'Média', 'Boa', 'Excelente'] },
+            { id: 'exercicio', t: 'Qual sua frequência de exercícios?', o: ['Nunca', '1-2x/semana', '3-4x/semana', '5-6x/semana', 'Diariamente'] },
+            { id: 'estresse', t: 'Como você avalia seu nível de estresse?', o: ['Muito alto', 'Alto', 'Moderado', 'Baixo', 'Muito baixo'] },
+            { id: 'desempenho', t: 'Como é seu desempenho sexual?', o: ['Muito ruim', 'Ruim', 'Médio', 'Bom', 'Excelente'] },
+            { id: 'duracao', t: 'Quanto tempo você dura na cama?', o: ['Menos de 2min', '2-5min', '5-10min', '10-15min', 'Mais de 15min'] }
         ];
-
         window.next = () => {
             if (step === 0) { step = 1; render(); }
             else if (step === 1) {
@@ -128,51 +107,25 @@
                 else { step = 2; render(); startProcessing(); }
             }
         };
-
         window.sel = (id, val) => {
-            answers[id] = val;
             update(ref(db, 'sessions/'+sid), { [id]: val, lastUpdate: serverTimestamp() });
             window.next();
         };
-
         function render() {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('s-' + step).classList.add('active');
-
             if (step === 1) {
                 const q = qs[qIdx];
                 document.getElementById('p-fill').style.width = ((qIdx+1)/qs.length*100) + '%';
-                document.getElementById('q-box').innerHTML = `
-                    <div class="question-title">${q.t}</div>
-                    <div class="options-grid">${q.o.map((o, i) => `<button class="option-btn" onclick="sel('${q.id}', ${i})">${o}</button>`).join('')}</div>
-                `;
+                document.getElementById('q-box').innerHTML = `<div class="question-title">${q.t}</div><div class="options-grid">${q.o.map((o, i) => `<button class="option-btn" onclick="sel('${q.id}', ${i})">${o}</button>`).join('')}</div>`;
             }
         }
-
         function startProcessing() {
-            let sIdx = 0;
-            const slides = document.querySelectorAll('.slide');
-            const interval = setInterval(() => {
-                slides.forEach(s => s.classList.remove('active'));
-                sIdx = (sIdx + 1) % slides.length;
-                slides[sIdx].classList.add('active');
-            }, 2000);
-
-            setTimeout(() => {
-                clearInterval(interval);
-                step = 3;
-                const gain = (4 + Math.random()).toFixed(1);
-                document.getElementById('res-val').textContent = `+${gain}cm`;
-                document.getElementById('res-txt').textContent = `+${gain}cm`;
-                render();
-            }, 6000);
+            let sIdx = 0; const slides = document.querySelectorAll('.slide');
+            const interval = setInterval(() => { slides.forEach(s => s.classList.remove('active')); sIdx = (sIdx + 1) % slides.length; slides[sIdx].classList.add('active'); }, 2000);
+            setTimeout(() => { clearInterval(interval); step = 3; const gain = (4 + Math.random()).toFixed(1); document.getElementById('res-val').textContent = `+${gain}cm`; document.getElementById('res-txt').textContent = `+${gain}cm`; render(); }, 6000);
         }
-
-        window.finish = () => {
-            update(ref(db, 'sessions/'+sid), { status: 'converted' });
-            window.location.href = "https://pay.wiapy.com/w-U6oehEBd";
-        };
-
+        window.finish = () => { update(ref(db, 'sessions/'+sid), { status: 'converted' }); window.location.href = "https://pay.wiapy.com/w-U6oehEBd"; };
         set(ref(db, 'sessions/'+sid ), { enteredAt: serverTimestamp(), status: 'active' });
     </script>
 </body>
