@@ -8,7 +8,7 @@
     <style>
         :root { --primary: #ef4444; --bg: #0a0a0a; --card: #141414; --text: #ffffff; --muted: #9ca3af; --border: #262626; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg ); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
         .quiz-card { width: 100%; max-width: 450px; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
         .fixed-header { font-size: 10px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
         .progress-bar { height: 4px; background: var(--border); border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
@@ -52,21 +52,33 @@
             <div class="fixed-header">PROCESSANDO SEUS DADOS...</div>
             <div class="carousel">
                 <div class="slide active">
-                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/paciente-D-antes-e-depois-alongamento-peniano-faloplastia-fotor-20260119195743.png">
+                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/22109742.jpg">
                     <div class="slide-info"><strong>Ricardo, 34 anos</strong> • +4.2cm em 28 dias</div>
                 </div>
                 <div class="slide">
-                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/WhatsApp-Image-2024-12-18-at-15.11.46-rcl53qv1p0gr5s3fzr30gvvchnyybvpbhth13gqhj4.jpeg">
+                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/meaSaaTbaAaaaamhD_iLJzfk9u2QO-ZC1.jpg">
                     <div class="slide-info"><strong>Marcelo, 41 anos</strong> • +3.8cm em 30 dias</div>
                 </div>
                 <div class="slide">
-                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/seja-malicioso-na-cama-pro-1.png">
+                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/paciente-D-antes-e-depois-alongamento-peniano-faloplastia-fotor-20260119195743.png">
                     <div class="slide-info"><strong>Felipe, 28 anos</strong> • +5.1cm em 35 dias</div>
                 </div>
+                <div class="slide">
+                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/WhatsApp-Image-2024-12-18-at-15.11.46-rcl53qv1p0gr5s3fzr30gvvchnyybvpbhth13gqhj4.jpeg">
+                    <div class="slide-info"><strong>João, 45 anos</strong> • +4.5cm em 32 dias</div>
+                </div>
+                <div class="slide">
+                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/Fotos-de-penis-grande10.jpg">
+                    <div class="slide-info"><strong>Marcos, 39 anos</strong> • +4.8cm em 29 dias</div>
+                </div>
             </div>
-            <div class="loading-bar-container"><span class="loading-label">✓ Analisando tecidos cavernosos...</span><div class="loading-bar"><div class="loading-fill"></div></div></div>
-            <div class="loading-bar-container"><span class="loading-label">⏳ Calculando limite de expansão...</span><div class="loading-bar"><div class="loading-fill" style="animation-delay: 0.5s"></div></div></div>
-            <p style="font-size: 12px; color: var(--muted ); margin-top: 15px;">Comparando com 10.847 casos de sucesso...</p>
+            <div id="loading-steps">
+                <div class="loading-bar-container"><span class="loading-label">✓ Analisando tecidos cavernosos...</span><div class="loading-bar"><div class="loading-fill"></div></div></div>
+                <div class="loading-bar-container"><span class="loading-label">⏳ Verificando densidade dos corpos cavernosos...</span><div class="loading-bar"><div class="loading-fill" style="animation-delay: 0.5s"></div></div></div>
+                <div class="loading-bar-container"><span class="loading-label">⏳ Ajustando protocolo de expansão celular...</span><div class="loading-bar"><div class="loading-fill" style="animation-delay: 1s"></div></div></div>
+                <div class="loading-bar-container"><span class="loading-label">⏳ Validando compatibilidade de tecidos...</span><div class="loading-bar"><div class="loading-fill" style="animation-delay: 1.5s"></div></div></div>
+            </div>
+            <p style="font-size: 12px; color: var(--muted); margin-top: 15px;">Comparando com 10.847 casos de sucesso...</p>
         </div>
         <div id="s-3" class="screen">
             <div class="fixed-header">RESULTADO GERADO</div>
@@ -87,7 +99,7 @@
             messagingSenderId: "274742031259",
             appId: "1:274742031259:web:18dc5c086fe3d58b56673e"
         };
-        const app = initializeApp(firebaseConfig );
+        const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const sid = 's_' + Date.now();
         let step = 0, qIdx = 0, variantIdx = 0, stepStartTime = 0;
@@ -136,7 +148,7 @@
 
         window.sel = (id, val) => {
             const hesitation = Date.now() - stepStartTime;
-            update(ref(db, 'sessions/'+sid), { [id]: val, lastUpdate: serverTimestamp() });
+            update(ref(db, 'sessions/'+sid), { [id]: val, lastUpdate: serverTimestamp(), currentStep: qIdx + 1 });
             update(ref(db, 'optimization/metrics/hesitation/'+qIdx), { [sid]: hesitation });
             window.next();
         };
@@ -158,9 +170,18 @@
         }
 
         function startProcessing() {
+            update(ref(db, 'sessions/'+sid), { currentStep: 'processing', lastUpdate: serverTimestamp() });
+            
             let sIdx = 0; const slides = document.querySelectorAll('.slide');
-            const interval = setInterval(() => { slides.forEach(s => s.classList.remove('active')); sIdx = (sIdx + 1) % slides.length; slides[sIdx].classList.add('active'); }, 2000);
-            setTimeout(() => { clearInterval(interval); step = 3;
+            const interval = setInterval(() => { 
+                slides.forEach(s => s.classList.remove('active')); 
+                sIdx = (sIdx + 1) % slides.length; 
+                slides[sIdx].classList.add('active'); 
+            }, 2000);
+
+            setTimeout(() => { 
+                clearInterval(interval); 
+                step = 3;
                 let score = 5.0;
                 const answers = {};
                 qs.forEach(q => { answers[q.id] = Math.floor(Math.random() * 5); });
@@ -172,22 +193,27 @@
                 document.getElementById('res-txt').textContent = `+${gain}cm`;
                 document.getElementById('res-text').innerHTML = RESULTS_COPY[variantIdx].replace('{val}', `<strong style="color: white">+${gain}cm</strong>`);
                 document.getElementById('cta-btn').textContent = CTA_COPY[variantIdx];
+                
+                update(ref(db, 'sessions/'+sid), { currentStep: 'result', lastUpdate: serverTimestamp(), status: 'completed' });
                 update(ref(db, 'optimization/variants/resultado_'+variantIdx), { converted: increment(1) });
                 update(ref(db, 'optimization/variants/cta_'+variantIdx), { converted: increment(1) });
                 render();
-            }, 6000);
+            }, 10000);
         }
 
-        window.finish = () => { update(ref(db, 'sessions/'+sid), { status: 'converted' }); window.location.href = "https://pay.wiapy.com/w-U6oehEBd"; };
+        window.finish = () => { 
+            update(ref(db, 'sessions/'+sid), { status: 'checkout_clicked', lastUpdate: serverTimestamp() }); 
+            window.location.href = "https://pay.wiapy.com/w-U6oehEBd"; 
+        };
 
-        async function init( ) {
+        async function init() {
             try {
                 const sessionsSnap = await get(ref(db, 'sessions'));
                 const totalSessions = sessionsSnap.exists() ? Object.keys(sessionsSnap.val()).length : 0;
                 variantIdx = Math.floor(totalSessions / 10) % 5;
                 const winnerSnap = await get(ref(db, 'optimization/winner'));
                 if (winnerSnap.exists()) variantIdx = winnerSnap.val().saudacao || variantIdx;
-                await set(ref(db, 'sessions/'+sid), { enteredAt: serverTimestamp(), status: 'active', variant: variantIdx });
+                await set(ref(db, 'sessions/'+sid), { enteredAt: serverTimestamp(), status: 'active', variant: variantIdx, currentStep: 0 });
                 update(ref(db, 'optimization/variants/saudacao_'+variantIdx), { tests: increment(1) });
                 render();
             } catch (e) { console.error(e); render(); }
