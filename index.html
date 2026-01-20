@@ -9,29 +9,95 @@
         :root { --primary: #ef4444; --bg: #0a0a0a; --card: #141414; --text: #ffffff; --muted: #9ca3af; --border: #262626; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg ); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .quiz-card { width: 100%; max-width: 450px; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
-        .fixed-header { font-size: 10px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; text-align: center; }
-        .badge-live { background: rgba(239, 68, 68, 0.1); color: var(--primary); padding: 6px 14px; border-radius: 50px; font-size: 10px; font-weight: 900; display: table; margin: 0 auto 20px auto; border: 1px solid var(--primary); }
-        h1 { font-size: 28px; font-weight: 900; line-height: 1.1; margin-bottom: 20px; text-transform: uppercase; text-align: center; }
-        h1 span { color: var(--primary); }
-        .step-title { font-size: 22px; font-weight: 800; margin-bottom: 25px; line-height: 1.2; text-align: center; }
-        .options-grid { display: grid; gap: 12px; }
-        .option-item { background: #1a1a1a; border: 1px solid var(--border); border-radius: 14px; padding: 20px; cursor: pointer; text-align: center; width: 100%; color: var(--text); font-size: 17px; font-weight: 700; transition: 0.2s; }
-        .option-item:active { transform: scale(0.97); background: var(--primary); }
-        .cta-btn { background: var(--primary); color: white; width: 100%; padding: 22px; border-radius: 14px; font-size: 18px; font-weight: 900; border: none; cursor: pointer; text-transform: uppercase; margin-top: 25px; box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4); }
-        .progress-bar { height: 5px; background: var(--border); border-radius: 10px; margin-bottom: 25px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: 0.4s; }
-        .footer-text { font-size: 11px; color: var(--muted); text-align: center; margin-top: 25px; font-weight: 600; }
-        .loader { border: 3px solid var(--border); border-top: 3px solid var(--primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .quiz-card { width: 100%; max-width: 450px; background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.6); text-align: center; }
+        .fixed-header { font-size: 10px; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+        .progress-bar { height: 4px; background: var(--border); border-radius: 10px; margin-bottom: 30px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.3s ease; }
+        .question-title { font-size: 24px; font-weight: 900; margin-bottom: 15px; line-height: 1.3; }
+        .options-grid { display: grid; gap: 12px; margin-bottom: 25px; }
+        .option-btn { background: var(--card); border: 2px solid var(--border); color: var(--text); padding: 16px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .option-btn.selected { border-color: var(--primary); background: rgba(239, 68, 68, 0.2); }
+        .btn-next { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; font-weight: 900; cursor: pointer; width: 100%; font-size: 16px; }
+        
+        /* BLOCO DE PROVA SOCIAL E PROCESSAMENTO */
+        .screen { display: none; }
+        .screen.active { display: block; }
+        .urgency-badge { background: rgba(239, 68, 68, 0.2); border: 2px solid var(--primary); padding: 10px 15px; border-radius: 50px; display: inline-block; margin-bottom: 20px; font-weight: 900; color: var(--primary); font-size: 12px; }
+        .carousel { width: 100%; height: 250px; background: #000; border-radius: 15px; margin: 15px 0; overflow: hidden; position: relative; border: 1px solid var(--border); }
+        .slide { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease; }
+        .slide.active { opacity: 1; }
+        .slide img { width: 100%; height: 100%; object-fit: cover; }
+        .slide-info { position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.8); padding: 8px; font-size: 12px; }
+        .loading-bar-container { text-align: left; margin-bottom: 12px; }
+        .loading-label { font-size: 11px; color: var(--muted); margin-bottom: 4px; display: block; }
+        .loading-bar { height: 6px; background: var(--border); border-radius: 10px; overflow: hidden; }
+        .loading-fill { height: 100%; background: var(--primary); width: 0%; animation: load 2s infinite; }
+        @keyframes load { 0% { width: 0%; } 50% { width: 100%; } 100% { width: 100%; } }
+
+        .result-badge { background: var(--primary); color: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; font-weight: 900; font-size: 28px; }
     </style>
 </head>
 <body>
-    <div class="quiz-card" id="app"><div class="loader"></div></div>
+    <div class="quiz-card">
+        <!-- SAUDAÇÃO -->
+        <div id="s-0" class="screen active">
+            <div class="fixed-header">AVALIAÇÃO PERSONALIZADA - MÉTODO TRIPE</div>
+            <div class="question-title">VOCÊ ESTÁ A UM PASSO...</div>
+            <p style="color: var(--muted); margin-bottom: 25px;">De descobrir seu verdadeiro potencial sexual</p>
+            <button class="btn-next" onclick="next()">INICIAR AGORA</button>
+        </div>
+
+        <!-- PERGUNTAS -->
+        <div id="s-1" class="screen">
+            <div class="fixed-header">AVALIAÇÃO PERSONALIZADA - MÉTODO TRIPE</div>
+            <div class="progress-bar"><div class="progress-fill" id="p-fill"></div></div>
+            <div id="q-box"></div>
+        </div>
+
+        <!-- BLOCO DE PROVA SOCIAL E PROCESSAMENTO (O QUE VOCÊ PEDIU) -->
+        <div id="s-2" class="screen">
+            <div class="urgency-badge">🔥 164 homens avaliando agora</div>
+            <div class="fixed-header">PROCESSANDO SEUS DADOS...</div>
+            
+            <div class="carousel">
+                <div class="slide active">
+                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/paciente-D-antes-e-depois-alongamento-peniano-faloplastia-fotor-20260119195743.png">
+                    <div class="slide-info"><strong>Ricardo, 34 anos</strong> • +4.2cm em 28 dias</div>
+                </div>
+                <div class="slide">
+                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/WhatsApp-Image-2024-12-18-at-15.11.46-rcl53qv1p0gr5s3fzr30gvvchnyybvpbhth13gqhj4.jpeg">
+                    <div class="slide-info"><strong>Marcelo, 41 anos</strong> • +3.8cm em 30 dias</div>
+                </div>
+                <div class="slide">
+                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/seja-malicioso-na-cama-pro-1.png">
+                    <div class="slide-info"><strong>Felipe, 28 anos</strong> • +5.1cm em 35 dias</div>
+                </div>
+            </div>
+
+            <div class="loading-bar-container">
+                <span class="loading-label">✓ Analisando tecidos cavernosos...</span>
+                <div class="loading-bar"><div class="loading-fill"></div></div>
+            </div>
+            <div class="loading-bar-container">
+                <span class="loading-label">⏳ Calculando limite de expansão...</span>
+                <div class="loading-bar"><div class="loading-fill" style="animation-delay: 0.5s"></div></div>
+            </div>
+            <p style="font-size: 12px; color: var(--muted ); margin-top: 15px;">Comparando com 10.847 casos de sucesso...</p>
+        </div>
+
+        <!-- RESULTADO -->
+        <div id="s-3" class="screen">
+            <div class="fixed-header">RESULTADO GERADO</div>
+            <div class="result-badge" id="res-val">+4.5cm</div>
+            <p style="margin-bottom: 20px; color: var(--muted);">Você pode ganhar até <strong style="color: white" id="res-txt"></strong> em 30 dias.</p>
+            <button class="btn-next" onclick="finish()">ACESSAR PROTOCOLO TRIPE</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, update, get, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-        
+        import { getDatabase, ref, set, update, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
         const firebaseConfig = {
             apiKey: "AIzaSyCDYmSVU2xVVuLw0vu3svKI7n4hvdxjW0w",
             authDomain: "projeto-tripe-oficial.firebaseapp.com",
@@ -42,169 +108,72 @@
             appId: "1:274742031259:web:18dc5c086fe3d58b56673e"
         };
 
-        const COPY_VARIANTS = {
-            saudacao: [
-                "VOCÊ ESTÁ A UM PASSO DE TER UM <span>PÊNIS MAIOR E MAIS GROSSO</span>",
-                "DESCUBRA COMO <span>AUMENTAR SEU MEMBRO</span> EM ATÉ 5CM NATURALMENTE",
-                "O SEGREDO PARA <span>ENGROSSAR E CRESCER</span> SEU PÊNIS FOI REVELADO",
-                "PARE DE SOFRER COM O TAMANHO: <span>CRESÇA SEU PÊNIS</span> AGORA",
-                "DIAGNÓSTICO DE <span>POTENCIAL PENIANO</span>: VEJA QUANTO PODE CRESCER"
-            ],
-            questions: [
-                ["Qual o tamanho do seu pênis ereto hoje?", "Quanto mede seu membro quando está duro?", "Qual sua medida atual de comprimento?", "Qual o tamanho do seu pênis agora?", "Quanto você mede ereto?"],
-                ["Você acorda com o pênis duro?", "Tem ereções matinais fortes?", "Sente o membro rígido ao acordar?", "Sua ereção matinal é frequente?", "Acorda com o pênis ereto?"],
-                ["Já tentou algum método para aumentar?", "Já usou algo para crescer o pênis?", "Já tentou engrossar o membro antes?", "É sua primeira vez tentando aumentar?", "Já buscou aumentar o tamanho?"],
-                ["Sua alimentação é boa ou ruim?", "Você come muita porcaria?", "Sua dieta ajuda ou atrapalha?", "Como está sua nutrição hoje?", "Você come bem no dia a dia?"],
-                ["Dorme bem ou vive cansado?", "Quantas horas você dorme?", "Seu sono é profundo?", "Você descansa o suficiente?", "Dorme mais de 7 horas?"],
-                ["Você faz algum exercício?", "Pratica atividade física?", "Treina com frequência?", "É uma pessoa ativa?", "Faz academia ou esportes?"],
-                ["Qual a sua idade?", "Quantos anos você tem?", "Em que faixa etária está?", "Qual sua idade atual?", "Quantos anos?"],
-            ],
-            resultado: [
-                "🔥 SEU PÊNIS PODE CRESCER MUITO",
-                "🚀 RESULTADO: VOCÊ TEM ALTO POTENCIAL",
-                "⚠️ BLOQUEIOS DE CRESCIMENTO DETECTADOS",
-                "✅ PROTOCOLO DE AUMENTO LIBERADO",
-                "💪 ANÁLISE: PREPARE-SE PARA CRESCER"
-            ],
-            cta: [
-                "🔥 QUERO MEU PÊNIS MAIOR AGORA",
-                "💪 QUERO ENGROSSAR MEU MEMBRO",
-                "🚀 LIBERAR MEU ACESSO AGORA",
-                "✅ QUERO CRESCER 5CM",
-                "🔓 QUERO O MÉTODO AGORA"
-            ]
+        const app = initializeApp(firebaseConfig );
+        const db = getDatabase(app);
+        const sid = 's_' + Date.now();
+        let step = 0; 
+        let qIdx = 0;
+        const answers = {};
+
+        const qs = [
+            { id: 'erecao', t: 'Qual sua frequência de ereção matinal?', o: ['Quase nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
+            { id: 'sono', t: 'Quantas horas você dorme por noite?', o: ['Menos de 5h', '5-6h', '6-7h', '7-8h', 'Mais de 8h'] },
+            { id: 'dieta', t: 'Como é sua alimentação?', o: ['Muito ruim', 'Ruim', 'Média', 'Boa', 'Excelente'] }
+        ];
+
+        window.next = () => {
+            if (step === 0) { step = 1; render(); }
+            else if (step === 1) {
+                if (qIdx < qs.length - 1) { qIdx++; render(); }
+                else { step = 2; render(); startProcessing(); }
+            }
         };
 
-        let db, userRef;
-        let currentStep = 0;
-        let answers = {};
-        let selectedVariants = { saudacao: 0, questions: [0,0,0,0,0,0,0], resultado: 0, cta: 0 };
-        let stepStartTime = 0;
-        const sessionId = 'user_' + Date.now( ) + '_' + Math.random().toString(36).substr(2, 5);
-
-        async function trackStep(step, name) { if (userRef) await update(userRef, { currentStep: step, stepName: name, lastUpdate: serverTimestamp() }); }
-        
-        async function trackMetric(path, value = 1) {
-            const r = ref(db, path);
-            const snap = await get(r);
-            const currentVal = snap.val() || 0;
-            await update(ref(db, path.substring(0, path.lastIndexOf('/'))), { [path.split('/').pop()]: currentVal + value });
-        }
-
-        async function trackHesitation(variantIdx, step, time) {
-            const path = 'optimization/metrics/hesitation/v' + variantIdx + '/step' + step;
-            const snap = await get(ref(db, path));
-            const data = snap.val() || { totalTime: 0, count: 0 };
-            await update(ref(db, path), {
-                totalTime: data.totalTime + time,
-                count: data.count + 1
-            });
-        }
+        window.sel = (id, val) => {
+            answers[id] = val;
+            update(ref(db, 'sessions/'+sid), { [id]: val, lastUpdate: serverTimestamp() });
+            window.next();
+        };
 
         function render() {
-            const app = document.getElementById('app');
-            stepStartTime = Date.now();
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('s-' + step).classList.add('active');
 
-            if (currentStep === 0) {
-                app.innerHTML = `
-                    <div class="badge-live">● AO VIVO: 1.247 HOMENS ONLINE</div>
-                    <h1>${COPY_VARIANTS.saudacao[selectedVariants.saudacao]}</h1>
-                    <p style="color: var(--muted); margin-bottom: 25px; font-weight: 600; text-align: center; font-size: 14px;">Responda o diagnóstico rápido para liberar seu protocolo de aumento.</p>
-                    <button class="cta-btn" onclick="window.next()">INICIAR AGORA</button>
-                    <p class="footer-text">🔒 Seus dados são 100% sigilosos e seguros.</p>
+            if (step === 1) {
+                const q = qs[qIdx];
+                document.getElementById('p-fill').style.width = ((qIdx+1)/qs.length*100) + '%';
+                document.getElementById('q-box').innerHTML = `
+                    <div class="question-title">${q.t}</div>
+                    <div class="options-grid">${q.o.map((o, i) => `<button class="option-btn" onclick="sel('${q.id}', ${i})">${o}</button>`).join('')}</div>
                 `;
-                trackStep(0, 'Saudação');
-                return;
             }
-            if (currentStep > 7) { showResult(app); return; }
-            
-            const qIdx = currentStep - 1;
-            const questionText = COPY_VARIANTS.questions[qIdx][selectedVariants.questions[qIdx]];
-            const options = [
-                ["Menos de 12 cm", "De 12 a 14 cm", "De 14 a 16 cm", "Mais de 16 cm"],
-                ["Quase nunca", "Raramente", "Às vezes", "Quase sempre"],
-                ["Nunca tentei", "Já ouvi falar", "Já tentei", "Sim, com disciplina"],
-                ["Como muita porcaria", "50/50", "Tento comer bem", "Saudável"],
-                ["Menos de 5h", "5h a 6h", "6h a 7h", "8h ou mais"],
-                ["Nunca", "1x por semana", "2 a 3x por semana", "4x ou mais"],
-                ["18 a 25 anos", "26 a 35 anos", "36 a 45 anos", "Mais de 45 anos"]
-            ][qIdx];
-            const id = ['tamanho', 'erecao', 'metodo', 'dieta', 'sono', 'treino', 'idade'][qIdx];
-
-            const progress = Math.round((currentStep / 7) * 100);
-            let optionsHtml = options.map(opt => `<button class="option-item" onclick="window.selectOption('${id}', '${opt}')">${opt}</button>`).join('');
-            
-            app.innerHTML = `
-                <div class="fixed-header">AVALIAÇÃO PERSONALIZADA - MÉTODO TRIPE</div>
-                <div class="progress-bar"><div class="progress-fill" style="width: ${progress}%"></div></div>
-                <div class="step-title">${questionText}</div>
-                <div class="options-grid">${optionsHtml}</div>
-                <div class="footer-text">Pergunta ${currentStep} de 7</div>
-            `;
-            trackStep(currentStep, 'Pergunta ' + currentStep);
         }
 
-        function showResult(app) {
-            const ganho = (Math.random() * (5.0 - 1.5) + 1.5).toFixed(1);
-            app.innerHTML = `
-                <div style="text-align: center;">
-                    <div class="badge-live">DIAGNÓSTICO CONCLUÍDO</div>
-                    <h1 style="font-size: 24px;">${COPY_VARIANTS.resultado[selectedVariants.resultado]}</h1>
-                    <div style="background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px; margin: 25px 0; border: 1px solid var(--border);">
-                        <p style="font-size: 14px; color: var(--muted); font-weight: 600;">Seu potencial de aumento é de:</p>
-                        <div style="font-size: 56px; font-weight: 900; color: var(--primary); margin: 10px 0;">+${ganho} CM</div>
-                        <p style="font-size: 14px; color: var(--muted); font-weight: 600;">Nos próximos 30 dias.</p>
-                    </div>
-                    <button class="cta-btn" onclick="window.finish()">${COPY_VARIANTS.cta[selectedVariants.cta]}</button>
-                    <p class="footer-text">⚠️ O acesso ao protocolo pode expirar em breve.</p>
-                </div>
-            `;
-            trackMetric('optimization/variants/resultado_' + selectedVariants.resultado + '/completed');
-            trackMetric('optimization/variants/cta_' + selectedVariants.cta + '/completed');
-        }
+        function startProcessing() {
+            let sIdx = 0;
+            const slides = document.querySelectorAll('.slide');
+            const interval = setInterval(() => {
+                slides.forEach(s => s.classList.remove('active'));
+                sIdx = (sIdx + 1) % slides.length;
+                slides[sIdx].classList.add('active');
+            }, 2000);
 
-        async function init() {
-            try {
-                const appInstance = initializeApp(firebaseConfig);
-                db = getDatabase(appInstance);
-                userRef = ref(db, 'sessions/' + sessionId);
-                const statsSnap = await get(ref(db, 'optimization/stats/total_sessions'));
-                const totalSessions = (statsSnap.val() || 0) + 1;
-                await update(ref(db, 'optimization/stats'), { total_sessions: totalSessions });
-                const variantIdx = Math.floor((totalSessions / 10) % 5);
-                selectedVariants.saudacao = variantIdx;
-                selectedVariants.resultado = variantIdx;
-                selectedVariants.cta = variantIdx;
-                selectedVariants.questions = [variantIdx, variantIdx, variantIdx, variantIdx, variantIdx, variantIdx, variantIdx];
-                const winnerSnap = await get(ref(db, 'optimization/winner'));
-                if (winnerSnap.exists()) {
-                    const winner = winnerSnap.val();
-                    selectedVariants.saudacao = winner.saudacao;
-                    selectedVariants.resultado = winner.resultado;
-                    selectedVariants.cta = winner.cta;
-                }
-                await set(userRef, { enteredAt: serverTimestamp(), status: 'active', variants: selectedVariants });
-                trackMetric('optimization/variants/saudacao_' + selectedVariants.saudacao + '/tests');
+            setTimeout(() => {
+                clearInterval(interval);
+                step = 3;
+                const gain = (4 + Math.random()).toFixed(1);
+                document.getElementById('res-val').textContent = `+${gain}cm`;
+                document.getElementById('res-txt').textContent = `+${gain}cm`;
                 render();
-            } catch (e) { console.error(e); render(); }
+            }, 6000);
         }
 
-        window.selectOption = (id, val) => { 
-            const hesitationTime = Date.now() - stepStartTime;
-            trackHesitation(selectedVariants.saudacao, currentStep, hesitationTime);
-            answers[id] = val; 
-            window.next(); 
-        };
-        window.next = () => { currentStep++; render(); };
-        window.finish = async () => {
-            if (userRef) {
-                await update(userRef, { currentStep: 99, status: 'converted', lastUpdate: serverTimestamp() });
-                trackMetric('optimization/variants/resultado_' + selectedVariants.resultado + '/converted');
-                trackMetric('optimization/variants/cta_' + selectedVariants.cta + '/converted');
-            }
+        window.finish = () => {
+            update(ref(db, 'sessions/'+sid), { status: 'converted' });
             window.location.href = "https://pay.wiapy.com/w-U6oehEBd";
         };
-        init( );
+
+        set(ref(db, 'sessions/'+sid ), { enteredAt: serverTimestamp(), status: 'active' });
     </script>
 </body>
 </html>
