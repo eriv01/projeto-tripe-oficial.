@@ -53,7 +53,7 @@
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, update, onValue, increment } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, set, update, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyCDYmSVU2xVVuLw0vu3svKI7n4hvdxjW0w",
@@ -98,28 +98,23 @@
 
         let currentQ = 0;
         let sessionId = 'sess_' + Date.now( ) + '_' + Math.random().toString(36).substr(2, 9);
-        let variantIdx = 0;
+        let variantIdx = Math.floor(Math.random() * 5);
         let responses = [];
 
         async function init() {
-            onValue(ref(db, 'optimization/winner'), (snap) => {
-                const winner = snap.val();
-                if (winner !== null && winner !== undefined) {
-                    variantIdx = winner;
-                } else {
-                    variantIdx = Math.floor(Math.random() * 5);
-                }
-                
-                set(ref(db, `sessions/${sessionId}`), {
+            try {
+                await set(ref(db, `sessions/${sessionId}`), {
                     enteredAt: Date.now(),
                     lastUpdate: Date.now(),
                     currentStep: 0,
                     variantIdx: variantIdx,
                     status: 'active'
                 });
-                
                 showQuestion();
-            }, { onlyOnce: true });
+            } catch (e) {
+                console.error("Erro Firebase:", e);
+                showQuestion(); // Tenta mostrar mesmo com erro no log
+            }
         }
 
         function showQuestion() {
@@ -200,9 +195,9 @@
                     lastUpdate: Date.now()
                 });
                 
-                // INTEGRAÇÃO WIAPY: Substitua o link abaixo pelo seu link real
-                const wiapyBaseLink = "https://pay.wiapy.com/LINK_DA_WIAPY_AQUI";
-                window.location.href = `${wiapyBaseLink}?external_id=${sessionId}`;
+                // LINK OFICIAL WIAPY INTEGRADO
+                const wiapyLink = "https://pay.wiapy.com/w-U6oehEBd";
+                window.location.href = `${wiapyLink}?external_id=${sessionId}`;
             };
         }
 
