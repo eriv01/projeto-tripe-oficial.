@@ -53,7 +53,7 @@
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, update, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, set, update, onValue, increment } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyCDYmSVU2xVVuLw0vu3svKI7n4hvdxjW0w",
@@ -98,23 +98,34 @@
 
         let currentQ = 0;
         let sessionId = 'sess_' + Date.now( ) + '_' + Math.random().toString(36).substr(2, 9);
-        let variantIdx = Math.floor(Math.random() * 5);
+        let variantIdx = 0;
         let responses = [];
 
         async function init() {
-            try {
-                await set(ref(db, `sessions/${sessionId}`), {
+            onValue(ref(db, 'optimization/winner'), (snap) => {
+                const winner = snap.val();
+                if (winner !== null) variantIdx = winner;
+                else {
+                    onValue(ref(db, 'sessions'), (sSnap) => {
+                        const total = sSnap.exists() ? Object.keys(sSnap.val()).length : 0;
+                        variantIdx = Math.floor(total / 10) % 5;
+                    }, { onlyOnce: true });
+                }
+                
+                set(ref(db, `sessions/${sessionId}`), {
                     enteredAt: Date.now(),
                     lastUpdate: Date.now(),
                     currentStep: 0,
                     variantIdx: variantIdx,
                     status: 'active'
                 });
+                
+                update(ref(db, `optimization/variants/saudacao_${variantIdx}`), { tests: increment(1) });
+                update(ref(db, `optimization/variants/resultado_${variantIdx}`), { tests: increment(1) });
+                update(ref(db, `optimization/variants/cta_${variantIdx}`), { tests: increment(1) });
+                
                 showQuestion();
-            } catch (e) {
-                console.error("Erro Firebase:", e);
-                showQuestion(); // Tenta mostrar mesmo com erro no log
-            }
+            }, { onlyOnce: true });
         }
 
         function showQuestion() {
@@ -195,7 +206,11 @@
                     lastUpdate: Date.now()
                 });
                 
-                // LINK OFICIAL WIAPY INTEGRADO
+                update(ref(db, `optimization/variants/saudacao_${variantIdx}`), { converted: increment(1) });
+                update(ref(db, `optimization/variants/resultado_${variantIdx}`), { converted: increment(1) });
+                update(ref(db, `optimization/variants/cta_${variantIdx}`), { converted: increment(1) });
+
+                // LINK WIAPY OFICIAL INTEGRADO
                 const wiapyLink = "https://pay.wiapy.com/w-U6oehEBd";
                 window.location.href = `${wiapyLink}?external_id=${sessionId}`;
             };
