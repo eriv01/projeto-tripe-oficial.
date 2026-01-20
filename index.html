@@ -19,17 +19,16 @@
         .progress-bar { height: 6px; background: #1a1a1a; border-radius: 10px; overflow: hidden; }
         .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
         .loading-container { display: none; width: 100%; max-width: 450px; text-align: center; }
-        .loading-img { width: 100%; border-radius: 16px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .loading-img { width: 100%; border-radius: 16px; margin-bottom: 20px; border: 1px solid var(--border); height: 250px; object-fit: cover; }
         .loading-text { font-size: 14px; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; }
-        .result-card { display: none; width: 100%; max-width: 450px; text-align: center; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .result-card { display: none; width: 100%; max-width: 450px; text-align: center; }
         .cta-button { background: var(--primary); color: white; border: none; padding: 22px; border-radius: 16px; font-size: 18px; font-weight: 900; cursor: pointer; width: 100%; margin-top: 20px; text-transform: uppercase; box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3); }
     </style>
 </head>
 <body>
     <div id="quiz-container" class="quiz-card">
         <div class="fixed-header">Protocolo TRIPE 2026</div>
-        <h2 id="question-text">Carregando...</h2>
+        <h2 id="question-text">Analisando perfil...</h2>
         <div id="options-container" class="options"></div>
     </div>
 
@@ -53,7 +52,7 @@
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, set, update, onValue, increment } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, set, update } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyCDYmSVU2xVVuLw0vu3svKI7n4hvdxjW0w",
@@ -87,7 +86,6 @@
             "Acesso liberado: Seu plano de 30 dias para regeneração celular está pronto."
         ];
         const CTA_COPY = ["QUERO COMEÇAR AGORA", "LIBERAR MEU ACESSO", "INICIAR PROTOCOLO", "GARANTIR MINHA VAGA", "ACESSAR MÉTODO"];
-
         const IMAGES = [
             "https://i.postimg.cc/85mXv39y/1.jpg",
             "https://i.postimg.cc/mD8m8v2n/2.jpg",
@@ -97,35 +95,19 @@
         ];
 
         let currentQ = 0;
-        let sessionId = 'sess_' + Date.now( ) + '_' + Math.random().toString(36).substr(2, 9);
-        let variantIdx = 0;
-        let responses = [];
+        let sessionId = 'sess_' + Date.now( );
+        let variantIdx = Math.floor(Math.random() * 5);
 
-        async function init() {
-            onValue(ref(db, 'optimization/winner'), (snap) => {
-                const winner = snap.val();
-                if (winner !== null) variantIdx = winner;
-                else {
-                    onValue(ref(db, 'sessions'), (sSnap) => {
-                        const total = sSnap.exists() ? Object.keys(sSnap.val()).length : 0;
-                        variantIdx = Math.floor(total / 10) % 5;
-                    }, { onlyOnce: true });
-                }
-                
-                set(ref(db, `sessions/${sessionId}`), {
-                    enteredAt: Date.now(),
-                    lastUpdate: Date.now(),
-                    currentStep: 0,
-                    variantIdx: variantIdx,
-                    status: 'active'
-                });
-                
-                update(ref(db, `optimization/variants/saudacao_${variantIdx}`), { tests: increment(1) });
-                update(ref(db, `optimization/variants/resultado_${variantIdx}`), { tests: increment(1) });
-                update(ref(db, `optimization/variants/cta_${variantIdx}`), { tests: increment(1) });
-                
-                showQuestion();
-            }, { onlyOnce: true });
+        function init() {
+            set(ref(db, `sessions/${sessionId}`), {
+                enteredAt: Date.now(),
+                lastUpdate: Date.now(),
+                currentStep: 0,
+                variantIdx: variantIdx,
+                status: 'active'
+            }).catch(e => console.log("Firebase Offline"));
+            
+            showQuestion();
         }
 
         function showQuestion() {
@@ -138,44 +120,28 @@
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.innerHTML = `<span>${opt}</span> <span>→</span>`;
-                btn.onclick = () => nextQuestion(opt);
+                btn.onclick = () => nextQuestion();
                 container.appendChild(btn);
             });
             
             document.getElementById('progress-fill').style.width = `${(currentQ / QUESTIONS.length) * 100}%`;
         }
 
-        function nextQuestion(answer) {
-            responses.push(answer);
+        function nextQuestion() {
             currentQ++;
-            update(ref(db, `sessions/${sessionId}`), { 
-                currentStep: currentQ, 
-                lastUpdate: Date.now(),
-                responses: responses 
-            });
-
-            if (currentQ < QUESTIONS.length) {
-                showQuestion();
-            } else {
-                startProcessing();
-            }
+            update(ref(db, `sessions/${sessionId}`), { currentStep: currentQ, lastUpdate: Date.now() }).catch(e => {});
+            if (currentQ < QUESTIONS.length) showQuestion();
+            else startProcessing();
         }
 
         function startProcessing() {
             document.getElementById('quiz-container').style.display = 'none';
             document.getElementById('prog-cont').style.display = 'none';
             document.getElementById('loading-container').style.display = 'block';
-            update(ref(db, `sessions/${sessionId}`), { currentStep: 'processing' });
+            update(ref(db, `sessions/${sessionId}`), { currentStep: 'processing' }).catch(e => {});
 
             let step = 0;
-            const statusTexts = [
-                "Analisando tecidos cavernosos...",
-                "Verificando densidade celular...",
-                "Ajustando protocolo de expansão...",
-                "Validando compatibilidade...",
-                "Finalizando seu plano personalizado..."
-            ];
-
+            const statusTexts = ["Analisando tecidos...", "Verificando densidade...", "Ajustando protocolo...", "Validando tecidos...", "Finalizando plano..."];
             const interval = setInterval(() => {
                 if (step < 5) {
                     document.getElementById('loading-image').src = IMAGES[step];
@@ -192,27 +158,16 @@
         function showResult() {
             document.getElementById('loading-container').style.display = 'none';
             document.getElementById('result-container').style.display = 'block';
-            update(ref(db, `sessions/${sessionId}`), { currentStep: 'result' });
+            update(ref(db, `sessions/${sessionId}`), { currentStep: 'result' }).catch(e => {});
 
             document.getElementById('res-salutation').innerText = SALUTATIONS[variantIdx];
             document.getElementById('res-copy').innerText = RESULTS_COPY[variantIdx];
-            
             const cta = document.getElementById('cta-button');
             cta.innerText = CTA_COPY[variantIdx];
             
             cta.onclick = () => {
-                update(ref(db, `sessions/${sessionId}`), { 
-                    status: 'checkout_clicked',
-                    lastUpdate: Date.now()
-                });
-                
-                update(ref(db, `optimization/variants/saudacao_${variantIdx}`), { converted: increment(1) });
-                update(ref(db, `optimization/variants/resultado_${variantIdx}`), { converted: increment(1) });
-                update(ref(db, `optimization/variants/cta_${variantIdx}`), { converted: increment(1) });
-
-                // LINK WIAPY OFICIAL INTEGRADO
-                const wiapyLink = "https://pay.wiapy.com/w-U6oehEBd";
-                window.location.href = `${wiapyLink}?external_id=${sessionId}`;
+                update(ref(db, `sessions/${sessionId}`), { status: 'checkout_clicked' }).catch(e => {});
+                window.location.href = `https://pay.wiapy.com/w-U6oehEBd?external_id=${sessionId}`;
             };
         }
 
