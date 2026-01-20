@@ -104,12 +104,10 @@
         async function init() {
             onValue(ref(db, 'optimization/winner'), (snap) => {
                 const winner = snap.val();
-                if (winner !== null) variantIdx = winner;
-                else {
-                    onValue(ref(db, 'sessions'), (sSnap) => {
-                        const total = sSnap.exists() ? Object.keys(sSnap.val()).length : 0;
-                        variantIdx = Math.floor(total / 10) % 5;
-                    }, { onlyOnce: true });
+                if (winner !== null && winner !== undefined) {
+                    variantIdx = winner;
+                } else {
+                    variantIdx = Math.floor(Math.random() * 5);
                 }
                 
                 set(ref(db, `sessions/${sessionId}`), {
@@ -119,10 +117,6 @@
                     variantIdx: variantIdx,
                     status: 'active'
                 });
-                
-                update(ref(db, `optimization/variants/saudacao_${variantIdx}`), { tests: increment(1) });
-                update(ref(db, `optimization/variants/resultado_${variantIdx}`), { tests: increment(1) });
-                update(ref(db, `optimization/variants/cta_${variantIdx}`), { tests: increment(1) });
                 
                 showQuestion();
             }, { onlyOnce: true });
@@ -206,12 +200,7 @@
                     lastUpdate: Date.now()
                 });
                 
-                update(ref(db, `optimization/variants/saudacao_${variantIdx}`), { converted: increment(1) });
-                update(ref(db, `optimization/variants/resultado_${variantIdx}`), { converted: increment(1) });
-                update(ref(db, `optimization/variants/cta_${variantIdx}`), { converted: increment(1) });
-
-                // INTEGRAÇÃO WIAPY: Envia o sessionId para rastrear a venda real
-                // SUBSTITUA 'LINK_DA_WIAPY_AQUI' pelo seu link real
+                // INTEGRAÇÃO WIAPY: Substitua o link abaixo pelo seu link real
                 const wiapyBaseLink = "https://pay.wiapy.com/LINK_DA_WIAPY_AQUI";
                 window.location.href = `${wiapyBaseLink}?external_id=${sessionId}`;
             };
