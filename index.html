@@ -64,7 +64,7 @@
                     <div class="slide-info"><strong>Felipe, 28 anos</strong> • +5.1cm em 35 dias</div>
                 </div>
                 <div class="slide">
-                    <img src="https://metodotripe.shop/wp-content/uploads/2026/01/WhatsApp-Image-2024-12-18-at-15.11.46-rcl53qv1p0gr5s3fzr30gvvchnyybvpbhth13gqhj4.jpeg">
+                    <img src="https://metodotripe.shop/wp-content/uploads/2024/12/WhatsApp-Image-2024-12-18-at-15.11.46-rcl53qv1p0gr5s3fzr30gvvchnyybvpbhth13gqhj4.jpeg">
                     <div class="slide-info"><strong>João, 45 anos</strong> • +4.5cm em 32 dias</div>
                 </div>
                 <div class="slide">
@@ -183,21 +183,12 @@
                 clearInterval(interval); 
                 step = 3;
                 let score = 5.0;
-                const answers = {};
-                qs.forEach(q => { answers[q.id] = Math.floor(Math.random() * 5); });
-                if (answers['ereção'] <= 1) score -= 0.5;
-                if (answers['sono'] <= 1) score -= 1.0;
-                score = Math.max(2.5, score);
                 const gain = score.toFixed(1);
-                document.getElementById('res-val').textContent = `+${gain}cm`;
-                
                 const resText = RESULTS_COPY[variantIdx].replace('{val}', `+${gain}cm`);
                 document.getElementById('res-text').innerHTML = resText;
                 document.getElementById('cta-btn').textContent = CTA_COPY[variantIdx];
                 
                 update(ref(db, 'sessions/'+sid), { currentStep: 'result', lastUpdate: serverTimestamp(), status: 'completed' });
-                update(ref(db, 'optimization/variants/resultado_'+variantIdx), { converted: increment(1) });
-                update(ref(db, 'optimization/variants/cta_'+variantIdx), { converted: increment(1) });
                 render();
             }, 10000);
         }
@@ -209,13 +200,15 @@
 
         async function init() {
             try {
-                const sessionsSnap = await get(ref(db, 'sessions'));
-                const totalSessions = sessionsSnap.exists() ? Object.keys(sessionsSnap.val()).length : 0;
-                variantIdx = Math.floor(totalSessions / 10) % 5;
+                const totalSnap = await get(ref(db, 'optimization/totalSessions'));
+                let total = totalSnap.exists() ? totalSnap.val() : 0;
+                variantIdx = Math.floor(total / 10) % 5;
+                
                 const winnerSnap = await get(ref(db, 'optimization/winner'));
                 if (winnerSnap.exists()) variantIdx = winnerSnap.val().saudacao || variantIdx;
-                await set(ref(db, 'sessions/'+sid), { enteredAt: serverTimestamp(), status: 'active', variant: variantIdx, currentStep: 0 });
-                update(ref(db, 'optimization/variants/saudacao_'+variantIdx), { tests: increment(1) });
+                
+                await set(ref(db, 'sessions/'+sid), { enteredAt: serverTimestamp(), status: 'active', variantIdx: variantIdx, currentStep: 0 });
+                await update(ref(db, 'optimization'), { totalSessions: increment(1) });
                 render();
             } catch (e) { console.error(e); render(); }
         }
