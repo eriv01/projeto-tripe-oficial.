@@ -190,8 +190,9 @@
                 score = Math.max(2.5, score);
                 const gain = score.toFixed(1);
                 document.getElementById('res-val').textContent = `+${gain}cm`;
-                document.getElementById('res-txt').textContent = `+${gain}cm`;
-                document.getElementById('res-text').innerHTML = RESULTS_COPY[variantIdx].replace('{val}', `<strong style="color: white">+${gain}cm</strong>`);
+                
+                const resText = RESULTS_COPY[variantIdx].replace('{val}', `+${gain}cm`);
+                document.getElementById('res-text').innerHTML = resText;
                 document.getElementById('cta-btn').textContent = CTA_COPY[variantIdx];
                 
                 update(ref(db, 'sessions/'+sid), { currentStep: 'result', lastUpdate: serverTimestamp(), status: 'completed' });
@@ -203,7 +204,7 @@
 
         window.finish = () => { 
             update(ref(db, 'sessions/'+sid), { status: 'checkout_clicked', lastUpdate: serverTimestamp() }); 
-            window.location.href = "https://pay.wiapy.com/w-U6oehEBd"; 
+            window.location.href = "https://pay.wiapy.com/w-U6oehEBd?external_id=" + sid; 
         };
 
         async function init() {
