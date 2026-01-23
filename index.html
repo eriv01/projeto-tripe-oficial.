@@ -87,10 +87,11 @@
             <button class="btn-next" onclick="finish()" id="cta-btn">ACESSAR PROTOCOLO TRIPE</button>
         </div>
     </div>
+
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getDatabase, ref, set, update, get, serverTimestamp, increment } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-        
+
         const firebaseConfig = {
             apiKey: "AIzaSyCDYmSVU2xVVuLw0vu3svKI7n4hvdxjW0w",
             authDomain: "projeto-tripe-oficial.firebaseapp.com",
@@ -100,15 +101,13 @@
             messagingSenderId: "274742031259",
             appId: "1:274742031259:web:18dc5c086fe3d58b56673e"
         };
-        
+
         const app = initializeApp(firebaseConfig );
         const db = getDatabase(app);
-        // Gerando um Session ID único
         const sid = 's_' + Date.now() + Math.random().toString(36).substr(2, 5);
-        
+
         let step = 0, qIdx = 0, variantIdx = 0, stepStartTime = 0;
 
-        // --- VARIANTES DE COPY PARA A/B TESTE ---
         const SALUTATIONS = [
             { title: "VOCÊ ESTÁ A UM PASSO...", subtitle: "De descobrir seu verdadeiro potencial sexual" },
             { title: "ESPERA ABRINDO...", subtitle: "Seu diagnóstico de ganho peniano personalizado" },
@@ -132,9 +131,7 @@
             "COMEÇAR MINHA TRANSFORMAÇÃO",
             "SIM! QUERO AUMENTAR MEU PÊNIS"
         ];
-        // ----------------------------------------
 
-        // --- PERGUNTAS DO QUIZ ---
         const qs = [
             { id: 'ereção', t: 'Qual sua frequência de ereção matinal?', o: ['Quase nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
             { id: 'sono', t: 'Quantas horas você dorme por noite?', o: ['Menos de 5h', '5-6h', '6-7h', '7-8h', 'Mais de 8h'] },
@@ -144,58 +141,35 @@
             { id: 'desempenho', t: 'Como é seu desempenho sexual?', o: ['Muito ruim', 'Ruim', 'Médio', 'Bom', 'Excelente'] },
             { id: 'duracao', t: 'Quanto tempo você dura na cama?', o: ['Menos de 2min', '2-5min', '5-10min', '10-15min', 'Mais de 15min'] }
         ];
-        // -------------------------
 
-        // Expondo funções para o escopo global (necessário para o onclick no HTML)
         window.next = () => {
-            if (step === 0) { 
-                step = 1; 
-                render(); 
-            } else if (step === 1) {
-                if (qIdx < qs.length - 1) { 
-                    qIdx++; 
-                    render(); 
-                } else { 
-                    step = 2; 
-                    render(); 
-                    startProcessing(); 
-                }
+            if (step === 0) { step = 1; render(); }
+            else if (step === 1) {
+                if (qIdx < qs.length - 1) { qIdx++; render(); }
+                else { step = 2; render(); startProcessing(); }
             }
         };
 
         window.sel = (id, val) => {
             const hesitation = Date.now() - stepStartTime;
-            // Atualização de sessão em background (não bloqueia a UI)
-            update(ref(db, 'sessions/'+sid), { 
-                [id]: val, 
-                lastUpdate: serverTimestamp(), 
-                currentStep: qIdx + 1 
-            });
-            update(ref(db, 'optimization/metrics/hesitation/'+qIdx), { [sid]: hesitation });
+            update(ref(db, 'sessions/'+sid), { [id]: val, lastUpdate: serverTimestamp(), currentStep: qIdx + 1 });
             window.next();
         };
 
         window.finish = () => { 
-            // Atualização de status em background (não bloqueia a UI)
             update(ref(db, 'sessions/'+sid), { status: 'checkout_clicked', lastUpdate: serverTimestamp() }); 
-            // Redirecionamento com os parâmetros de rastreio
             window.location.href = "https://pay.wiapy.com/w-U6oehEBd?utm_source=" + sid + "&external_id=" + sid; 
         };
 
         function render( ) {
-            // Lógica de troca de tela (seu código original)
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('s-' + step).classList.add('active');
-            
             if (step === 0) {
-                // Aplica a copy da variante de A/B Teste
                 const sal = SALUTATIONS[variantIdx];
                 document.getElementById('sal-title').textContent = sal.title;
                 document.getElementById('sal-sub').textContent = sal.subtitle;
             }
-            
             if (step === 1) {
-                // Renderiza a pergunta atual
                 const q = qs[qIdx];
                 document.getElementById('p-fill').style.width = ((qIdx+1)/qs.length*100) + '%';
                 document.getElementById('q-box').innerHTML = `<div class="question-title">${q.t}</div><div class="options-grid">${q.o.map((o, i) => `<button class="option-btn" onclick="sel('${q.id}', ${i})">${o}</button>`).join('')}</div>`;
@@ -204,12 +178,7 @@
         }
 
         function startProcessing() {
-            // Inicia o carrossel e a contagem de 10 segundos
-            update(ref(db, 'sessions/'+sid), { currentStep: 'processing', lastUpdate: serverTimestamp() });
-            
-            let sIdx = 0; 
-            const slides = document.querySelectorAll('.slide');
-            // Carrossel de 2 segundos (seu código original)
+            let sIdx = 0; const slides = document.querySelectorAll('.slide');
             const interval = setInterval(() => { 
                 slides.forEach(s => s.classList.remove('active')); 
                 sIdx = (sIdx + 1) % slides.length; 
@@ -219,65 +188,43 @@
             setTimeout(() => { 
                 clearInterval(interval); 
                 step = 3;
-                let score = 5.0; // Valor fixo para o resultado
-                const gain = score.toFixed(1);
-                
-                // Aplica a copy do resultado da variante de A/B Teste
-                const resText = RESULTS_COPY[variantIdx].replace('{val}', `+${gain}cm`);
-                document.getElementById('res-val').textContent = `+${gain}cm`;
+                const resText = RESULTS_COPY[variantIdx].replace('{val}', `+5.0cm`);
                 document.getElementById('res-txt').textContent = resText;
                 document.getElementById('cta-btn').textContent = CTA_COPY[variantIdx];
-                
-                // Atualiza status final em background
-                update(ref(db, 'sessions/'+sid), { currentStep: 'result', lastUpdate: serverTimestamp(), status: 'completed' });
                 render();
             }, 10000);
         }
 
-        // --- FUNÇÃO CRÍTICA DE INICIALIZAÇÃO (CORRIGIDA) ---
         function init() {
-            // 1. Renderiza IMEDIATAMENTE para evitar tela preta
-            render(); 
-            
-            // 2. Inicia a comunicação com o Firebase em background (Promises)
-            get(ref(db, 'optimization/totalSessions'))
-                .then((totalSnap) => {
-                    let total = totalSnap.exists() ? totalSnap.val() : 0;
-                    // Lógica de rotação a cada 10 leads
-                    variantIdx = Math.floor(total / 10) % 5;
-                    
-                    // Verifica se há um vencedor forçado
-                    return get(ref(db, 'optimization/winner'));
-                })
-                .then((winnerSnap) => {
-                    if (winnerSnap.exists()) {
-                        // Se houver um vencedor forçado, usa ele
-                        variantIdx = winnerSnap.val().saudacao || variantIdx;
+            render(); // Abre o quiz na hora
+
+            // INJEÇÃO DE COPY NO FIREBASE (Para o Dashboard ler)
+            const variantsRef = ref(db, 'ab_testing/copy_variants');
+            get(variantsRef).then((snapshot) => {
+                if (!snapshot.exists()) {
+                    const allVariants = {};
+                    for (let i = 0; i < 5; i++) {
+                        const letter = String.fromCharCode(65 + i);
+                        allVariants['Variante_' + letter] = {
+                            saudacao: SALUTATIONS[i].title,
+                            subtitulo: SALUTATIONS[i].subtitle,
+                            resultado: RESULTS_COPY[i],
+                            cta: CTA_COPY[i]
+                        };
                     }
-                    
-                    // 3. Salva a sessão no Firebase
-                    set(ref(db, 'sessions/'+sid), { 
-                        enteredAt: serverTimestamp(), 
-                        status: 'active', 
-                        variantIdx: variantIdx, 
-                        currentStep: 0 
-                    });
-                    
-                    // 4. Incrementa o contador de sessões
-                    update(ref(db, 'optimization'), { totalSessions: increment(1) });
-                    
-                    // 5. Re-renderiza para aplicar a variante correta (se a variante padrão for diferente)
-                    render();
-                })
-                .catch((e) => {
-                    // Se o Firebase falhar, usa a variante 0 e o quiz não trava
-                    console.error("Erro ao conectar ao Firebase, usando variante padrão.", e);
-                    variantIdx = 0;
-                    render();
-                });
+                    set(variantsRef, allVariants);
+                }
+            });
+
+            // LÓGICA DE ROTAÇÃO
+            get(ref(db, 'optimization/totalSessions')).then((snap) => {
+                let total = snap.exists() ? snap.val() : 0;
+                variantIdx = Math.floor(total / 10) % 5;
+                set(ref(db, 'sessions/'+sid), { enteredAt: serverTimestamp(), status: 'active', variantIdx: variantIdx });
+                update(ref(db, 'optimization'), { totalSessions: increment(1) });
+                render();
+            }).catch(() => { render(); });
         }
-        // ---------------------------------------------------
-        
         init();
     </script>
 </body>
