@@ -132,20 +132,65 @@
             "SIM! QUERO AUMENTAR MEU PÊNIS"
         ];
 
-        const qs = [
-            { id: 'ereção', t: 'Qual sua frequência de ereção matinal?', o: ['Quase nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
-            { id: 'sono', t: 'Quantas horas você dorme por noite?', o: ['Menos de 5h', '5-6h', '6-7h', '7-8h', 'Mais de 8h'] },
-            { id: 'dieta', t: 'Como é sua alimentação?', o: ['Muito ruim', 'Ruim', 'Média', 'Boa', 'Excelente'] },
-            { id: 'exercicio', t: 'Qual sua frequência de exercícios?', o: ['Nunca', '1-2x/semana', '3-4x/semana', '5-6x/semana', 'Diariamente'] },
-            { id: 'estresse', t: 'Como você avalia seu nível de estresse?', o: ['Muito alto', 'Alto', 'Moderado', 'Baixo', 'Muito baixo'] },
-            { id: 'desempenho', t: 'Como é seu desempenho sexual?', o: ['Muito ruim', 'Ruim', 'Médio', 'Bom', 'Excelente'] },
-            { id: 'duracao', t: 'Quanto tempo você dura na cama?', o: ['Menos de 2min', '2-5min', '5-10min', '10-15min', 'Mais de 15min'] }
+        // --- AS 5 VARIAÇÕES DE PERGUNTAS REAIS (35 PERGUNTAS ÚNICAS) ---
+        const ALL_QUESTIONS = [
+            // Variante A: Foco em Saúde e Hábitos
+            [
+                { id: 'ereção', t: 'Qual sua frequência de ereção matinal?', o: ['Quase nunca', 'Raramente', 'Às vezes', 'Frequentemente', 'Sempre'] },
+                { id: 'sono', t: 'Quantas horas você dorme por noite?', o: ['Menos de 5h', '5-6h', '6-7h', '7-8h', 'Mais de 8h'] },
+                { id: 'dieta', t: 'Como é sua alimentação?', o: ['Muito ruim', 'Ruim', 'Média', 'Boa', 'Excelente'] },
+                { id: 'exercicio', t: 'Qual sua frequência de exercícios?', o: ['Nunca', '1-2x/semana', '3-4x/semana', '5-6x/semana', 'Diariamente'] },
+                { id: 'estresse', t: 'Como você avalia seu nível de estresse?', o: ['Muito alto', 'Alto', 'Moderado', 'Baixo', 'Muito baixo'] },
+                { id: 'desempenho', t: 'Como é seu desempenho sexual?', o: ['Muito ruim', 'Ruim', 'Médio', 'Bom', 'Excelente'] },
+                { id: 'duracao', t: 'Quanto tempo você dura na cama?', o: ['Menos de 2min', '2-5min', '5-10min', '10-15min', 'Mais de 15min'] }
+            ],
+            // Variante B: Foco em Anatomia e Objetivos
+            [
+                { id: 'idade', t: 'Qual a sua faixa etária atual?', o: ['18-25', '26-35', '36-45', '46-55', '55+'] },
+                { id: 'objetivo', t: 'Qual seu maior desejo hoje?', o: ['Aumentar tamanho', 'Mais rigidez', 'Durar mais', 'Mais libido'] },
+                { id: 'tentativas', t: 'Já usou algum estimulante ou bomba?', o: ['Nunca usei', 'Sim, mas sem sucesso', 'Sim, funcionou pouco'] },
+                { id: 'saude', t: 'Possui alguma condição como Diabetes?', o: ['Não', 'Sim, Diabetes', 'Sim, Pressão Alta', 'Outras'] },
+                { id: 'vicio', t: 'Você fuma ou consome álcool?', o: ['Não', 'Apenas socialmente', 'Sim, frequentemente'] },
+                { id: 'energia', t: 'Como está sua disposição física?', o: ['Sempre cansado', 'Normal', 'Muita energia'] },
+                { id: 'foco', t: 'Consegue manter a ereção até o fim?', o: ['Sim, sempre', 'Às vezes falha', 'Tenho muita dificuldade'] }
+            ],
+            // Variante C: Foco em Performance e Confiança
+            [
+                { id: 'confianca', t: 'Como está sua confiança na hora H?', o: ['Muito baixa', 'Inseguro', 'Normal', 'Totalmente confiante'] },
+                { id: 'parceira', t: 'Sua parceira já reclamou de algo?', o: ['Nunca', 'Sim, do tamanho', 'Sim, da duração', 'Sim, da falta de rigidez'] },
+                { id: 'frequencia', t: 'Quantas vezes transa por semana?', o: ['Nenhuma', '1 vez', '2 a 3 vezes', 'Mais de 4 vezes'] },
+                { id: 'porno', t: 'Consome conteúdo adulto com frequência?', o: ['Não', 'Raramente', 'Sim, todos os dias'] },
+                { id: 'tamanho_atual', t: 'Qual seu tamanho estimado atual?', o: ['Menos de 10cm', '10-13cm', '13-16cm', 'Mais de 16cm'] },
+                { id: 'recuperacao', t: 'Quanto tempo leva para a segunda dose?', o: ['Minutos', 'Algumas horas', 'Só no dia seguinte', 'Não consigo'] },
+                { id: 'prioridade', t: 'Resolver isso é prioridade para você?', o: ['Sim, urgente', 'Sim, mas posso esperar', 'Apenas curiosidade'] }
+            ],
+            // Variante D: Foco em Diagnóstico Biológico
+            [
+                { id: 'circulacao', t: 'Sente as mãos ou pés frios com frequência?', o: ['Sim', 'Não', 'Às vezes'] },
+                { id: 'libido', t: 'Como está seu desejo sexual hoje?', o: ['Inexistente', 'Baixo', 'Normal', 'Muito alto'] },
+                { id: 'testosterona', t: 'Já fez exame de testosterona?', o: ['Nunca fiz', 'Sim, estava baixa', 'Sim, estava normal'] },
+                { id: 'gordura', t: 'Possui gordura acumulada no abdômen?', o: ['Muita', 'Pouca', 'Nada'] },
+                { id: 'erecao_noturna', t: 'Percebe ereções durante a noite?', o: ['Sim', 'Não', 'Não sei dizer'] },
+                { id: 'sensibilidade', t: 'Como está sua sensibilidade?', o: ['Muito alta (rápido)', 'Normal', 'Baixa (demoro muito)'] },
+                { id: 'compromisso', t: 'Seguiria um método de 5 min por dia?', o: ['Com certeza', 'Vou tentar', 'Não tenho tempo'] }
+            ],
+            // Variante E: Foco em Resultados Rápidos
+            [
+                { id: 'pressa', t: 'Em quanto tempo quer ver resultados?', o: ['7 dias', '15 dias', '30 dias', 'Não tenho pressa'] },
+                { id: 'investimento', t: 'Já gastou dinheiro com soluções falsas?', o: ['Nunca gastei', 'Já gastei um pouco', 'Já gastei muito'] },
+                { id: 'suporte', t: 'Gostaria de acompanhamento no processo?', o: ['Sim, seria ótimo', 'Não preciso'] },
+                { id: 'discrecao', t: 'A discrição da entrega é importante?', o: ['Totalmente', 'Tanto faz'] },
+                { id: 'ganho_desejado', t: 'Quantos cm seriam ideais para você?', o: ['+2 a 3cm', '+4 a 5cm', '+6cm ou mais'] },
+                { id: 'conhecimento', t: 'Conhece o Método TRIPE?', o: ['Já ouvi falar', 'Estou conhecendo agora', 'Vi um anúncio'] },
+                { id: 'decisao', t: 'Está pronto para o seu novo tamanho?', o: ['Sim, vamos lá!', 'Ainda tenho dúvidas'] }
+            ]
         ];
 
         window.next = () => {
+            const currentQs = ALL_QUESTIONS[variantIdx];
             if (step === 0) { step = 1; render(); }
             else if (step === 1) {
-                if (qIdx < qs.length - 1) { qIdx++; render(); }
+                if (qIdx < currentQs.length - 1) { qIdx++; render(); }
                 else { step = 2; render(); startProcessing(); }
             }
         };
@@ -164,14 +209,17 @@
         function render( ) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('s-' + step).classList.add('active');
+            
             if (step === 0) {
                 const sal = SALUTATIONS[variantIdx];
                 document.getElementById('sal-title').textContent = sal.title;
                 document.getElementById('sal-sub').textContent = sal.subtitle;
             }
+            
             if (step === 1) {
-                const q = qs[qIdx];
-                document.getElementById('p-fill').style.width = ((qIdx+1)/qs.length*100) + '%';
+                const currentQs = ALL_QUESTIONS[variantIdx];
+                const q = currentQs[qIdx];
+                document.getElementById('p-fill').style.width = ((qIdx+1)/currentQs.length*100) + '%';
                 document.getElementById('q-box').innerHTML = `<div class="question-title">${q.t}</div><div class="options-grid">${q.o.map((o, i) => `<button class="option-btn" onclick="sel('${q.id}', ${i})">${o}</button>`).join('')}</div>`;
                 stepStartTime = Date.now();
             }
@@ -196,31 +244,19 @@
         }
 
         function init() {
-            render(); // Abre o quiz na hora
-
-            // INJEÇÃO DE COPY NO FIREBASE (Para o Dashboard ler)
-            const variantsRef = ref(db, 'ab_testing/copy_variants');
-            get(variantsRef).then((snapshot) => {
-                if (!snapshot.exists()) {
-                    const allVariants = {};
-                    for (let i = 0; i < 5; i++) {
-                        const letter = String.fromCharCode(65 + i);
-                        allVariants['Variante_' + letter] = {
-                            saudacao: SALUTATIONS[i].title,
-                            subtitulo: SALUTATIONS[i].subtitle,
-                            resultado: RESULTS_COPY[i],
-                            cta: CTA_COPY[i]
-                        };
-                    }
-                    set(variantsRef, allVariants);
-                }
-            });
-
-            // LÓGICA DE ROTAÇÃO
+            render(); 
             get(ref(db, 'optimization/totalSessions')).then((snap) => {
                 let total = snap.exists() ? snap.val() : 0;
                 variantIdx = Math.floor(total / 10) % 5;
-                set(ref(db, 'sessions/'+sid), { enteredAt: serverTimestamp(), status: 'active', variantIdx: variantIdx });
+                const variantLetter = String.fromCharCode(65 + variantIdx);
+
+                set(ref(db, 'sessions/'+sid), { 
+                    enteredAt: serverTimestamp(), 
+                    status: 'active', 
+                    variantIdx: variantIdx,
+                    variantName: "Variante " + variantLetter
+                });
+
                 update(ref(db, 'optimization'), { totalSessions: increment(1) });
                 render();
             }).catch(() => { render(); });
