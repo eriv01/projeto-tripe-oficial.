@@ -101,21 +101,15 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-                      // INICIALIZAÇÃO DESTRAVADA
-        async function init() {
+              
+                       // INICIALIZAÇÃO RELÂMPAGO (NÃO TRAVA)
+        function init() {
+            // 1. Define o ângulo rápido (baseado no tempo para variar)
+            // Isso garante que mude a copy sem precisar esperar o banco de dados lento
+            variantIdx = Math.floor(Date.now() / 1000 / 60) % 5; 
+
+            // 2. Manda os dados para o Firebase "em silêncio" (sem travar a tela)
             try {
-                // Tenta buscar o contador, mas se demorar mais de 2 segundos, segue com o padrão
-                const totalSnap = await get(ref(db, 'optimization/totalSessions')).catch(() => null);
-                let total = (totalSnap && totalSnap.exists()) ? totalSnap.val() : 0;
-                
-                variantIdx = Math.floor(total / 10) % 5;
-                
-                const winnerSnap = await get(ref(db, 'optimization/winner')).catch(() => null);
-                if (winnerSnap && winnerSnap.exists()) {
-                    variantIdx = winnerSnap.val().saudacao || variantIdx;
-                }
-                
-                // Salva a sessão sem travar o usuário
                 set(ref(db, 'sessions/' + sid), { 
                     enteredAt: serverTimestamp(), 
                     status: 'active', 
@@ -123,22 +117,16 @@
                     currentStep: 0,
                     lastUpdate: serverTimestamp()
                 });
-                
                 update(ref(db, 'optimization'), { totalSessions: increment(1) });
-                
-                console.log("Quiz Destravado - Ângulo:", variantIdx + 1);
-                render(); // Libera a tela
-            } catch (e) { 
-                console.error("Erro ao iniciar, liberando Quiz padrão:", e); 
-                variantIdx = 0; 
-                render(); 
-            }
+            } catch (e) { console.log("Firebase offline, mas quiz segue..."); }
+
+            // 3. MOSTRA A TELA NA HORA
+            render(); 
         }
 
-        // CHAMA A INICIALIZAÇÃO
+        // EXECUTA IMEDIATAMENTE
         init();
-
-                
+ 
                 await set(ref(db, 'sessions/' + sid), { 
                     enteredAt: serverTimestamp(), 
                     status: 'active', 
