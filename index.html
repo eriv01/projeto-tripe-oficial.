@@ -101,34 +101,43 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-                // 1. GERAÇÃO DE ID ÚNICO E SEGURO (Substitui o antigo sid)
-        const sid = localStorage.getItem('sessionId') || 's_' + Date.now() + Math.random().toString(36).substr(2, 5);
-        localStorage.setItem('sessionId', sid);
-
-        let step = 0, qIdx = 0, variantIdx = 0, stepStartTime = 0;
-
-        // 2. FUNÇÃO DE FINALIZAÇÃO (CONECTADA AO WEBHOOK)
-        window.finish = async () => { 
+                      // INICIALIZAÇÃO DESTRAVADA
+        async function init() {
             try {
-                await update(ref(db, 'sessions/' + sid), { 
-                    status: 'checkout_clicked', 
-                    lastUpdate: serverTimestamp() 
-                });
-            } catch (e) { console.error("Erro ao salvar clique:", e); }
-            window.location.href = "https://pay.wiapy.com/w-U6oehEBd?utm_source=" + sid; 
-        };
-
-        // 3. INICIALIZAÇÃO COM TRAVA DE VARIAÇÃO A/B
-        async function init( ) {
-            try {
-                const totalSnap = await get(ref(db, 'optimization/totalSessions'));
-                let total = totalSnap.exists() ? totalSnap.val() : 0;
+                // Tenta buscar o contador, mas se demorar mais de 2 segundos, segue com o padrão
+                const totalSnap = await get(ref(db, 'optimization/totalSessions')).catch(() => null);
+                let total = (totalSnap && totalSnap.exists()) ? totalSnap.val() : 0;
+                
                 variantIdx = Math.floor(total / 10) % 5;
                 
-                const winnerSnap = await get(ref(db, 'optimization/winner'));
-                if (winnerSnap.exists()) {
+                const winnerSnap = await get(ref(db, 'optimization/winner')).catch(() => null);
+                if (winnerSnap && winnerSnap.exists()) {
                     variantIdx = winnerSnap.val().saudacao || variantIdx;
                 }
+                
+                // Salva a sessão sem travar o usuário
+                set(ref(db, 'sessions/' + sid), { 
+                    enteredAt: serverTimestamp(), 
+                    status: 'active', 
+                    variantIdx: variantIdx, 
+                    currentStep: 0,
+                    lastUpdate: serverTimestamp()
+                });
+                
+                update(ref(db, 'optimization'), { totalSessions: increment(1) });
+                
+                console.log("Quiz Destravado - Ângulo:", variantIdx + 1);
+                render(); // Libera a tela
+            } catch (e) { 
+                console.error("Erro ao iniciar, liberando Quiz padrão:", e); 
+                variantIdx = 0; 
+                render(); 
+            }
+        }
+
+        // CHAMA A INICIALIZAÇÃO
+        init();
+
                 
                 await set(ref(db, 'sessions/' + sid), { 
                     enteredAt: serverTimestamp(), 
