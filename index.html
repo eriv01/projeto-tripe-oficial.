@@ -193,26 +193,60 @@
             }, 10000);
         }
 
-        window.finish = () => { 
-            update(ref(db, 'sessions/'+sid), { status: 'checkout_clicked', lastUpdate: serverTimestamp() }); 
-            window.location.href = "https://pay.wiapy.com/w-U6oehEBd?external_id=" + sid; 
+               window.finish = () => { 
+            // 1. Salva o clique no Firebase (sem travar o redirecionamento)
+            update(ref(db, 'sessions/' + sid), { 
+                status: 'checkout_clicked', 
+                lastUpdate: serverTimestamp() 
+            }); 
+            
+            // 2. Redireciona usando o utm_source (O SEGREDO PARA O WEBHOOK FUNCIONAR)
+            // Mantemos o external_id também por segurança, mas o utm_source é o que manda agora
+            window.location.href = "https://pay.wiapy.com/w-U6oehEBd?utm_source=" + sid + "&external_id=" + sid; 
         };
 
-        async function init() {
-            try {
-                const totalSnap = await get(ref(db, 'optimization/totalSessions'));
-                let total = totalSnap.exists() ? totalSnap.val() : 0;
+        };
+
+               function init() {
+            // 1. Tenta buscar o contador, mas não trava a tela se demorar
+            get(ref(db, 'optimization/totalSessions')).then((totalSnap) => {
+                const total = totalSnap.exists() ? totalSnap.val() : 0;
+                
+                // Define o ângulo (muda a cada 10 leads)
                 variantIdx = Math.floor(total / 10) % 5;
                 
-                const winnerSnap = await get(ref(db, 'optimization/winner'));
-                if (winnerSnap.exists()) variantIdx = winnerSnap.val().saudacao || variantIdx;
-                
-                await set(ref(db, 'sessions/'+sid), { enteredAt: serverTimestamp(), status: 'active', variantIdx: variantIdx, currentStep: 0 });
-                await update(ref(db, 'optimization'), { totalSessions: increment(1) });
-                render();
-            } catch (e) { console.error(e); render(); }
+                // Verifica se tem um vencedor definido no Dash
+                get(ref(db, 'optimization/winner')).then((winnerSnap) => {
+                    if (winnerSnap.exists()) {
+                        variantIdx = winnerSnap.val().saudacao || variantIdx;
+                    }
+                    
+                    // Salva a sessão e atualiza o contador em silêncio
+                    set(ref(db, 'sessions/' + sid), { 
+                        enteredAt: serverTimestamp(), 
+                        status: 'active', 
+                        variantIdx: variantIdx, 
+                        currentStep: 0,
+                        lastUpdate: serverTimestamp()
+                    });
+                    update(ref(db, 'optimization'), { totalSessions: increment(1) });
+                    
+                    // Atualiza a tela com a copy correta assim que o banco responder
+                    render(); 
+                });
+            }).catch((e) => {
+                console.error("Erro Firebase, usando padrão:", e);
+                variantIdx = 0;
+                render(); 
+            });
+            
+            // 2. MOSTRA O QUIZ IMEDIATAMENTE (Ângulo 1 por padrão enquanto o banco carrega)
+            render(); 
         }
+
+        // Inicia o processo sem travar
         init();
+
     </script>
 </body>
 </html>
