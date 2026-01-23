@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Método TRIPE - Avaliação Gratuita</title>
+    <title>Método TRIPE - Avaliação</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --primary: #ef4444; --bg: #000000; --card: #0f0f0f; --text: #ffffff; --muted: #9ca3af; --border: #262626; }
@@ -16,18 +16,16 @@
         h2 { font-size: 24px; font-weight: 900; line-height: 1.2; margin-bottom: 15px; }
         p { color: var(--muted); font-size: 15px; line-height: 1.5; margin-bottom: 30px; }
         .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 18px; border-radius: 12px; font-size: 16px; font-weight: 900; cursor: pointer; transition: transform 0.2s; text-transform: uppercase; }
-        .btn:active { transform: scale(0.98); }
-        .btn-opt { width: 100%; background: transparent; color: white; border: 1px solid var(--border); padding: 15px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: left; transition: all 0.2s; margin-bottom: 10px; }
-        .btn-opt:hover { border-color: var(--primary); background: rgba(239, 68, 68, 0.05); }
+        .btn-opt { width: 100%; background: transparent; color: white; border: 1px solid var(--border); padding: 15px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; text-align: left; margin-bottom: 10px; }
+        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .photo-item { background: var(--border); border-radius: 12px; height: 100px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted); overflow: hidden; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
         .animate-in { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .success-icon { font-size: 60px; text-align: center; margin-bottom: 20px; display: block; }
     </style>
 </head>
 <body>
-    <div id="quiz-container">
-        <div style="text-align: center; color: var(--muted);">Carregando avaliação...</div>
-    </div>
+    <div id="quiz-container"></div>
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
@@ -45,8 +43,7 @@
 
         const app = initializeApp(firebaseConfig );
         const db = getDatabase(app);
-        const sid = localStorage.getItem('sessionId') || 's_' + Date.now() + Math.random().toString(36).substr(2, 5);
-        localStorage.setItem('sessionId', sid);
+        const sid = 's_' + Date.now() + Math.random().toString(36).substr(2, 5);
 
         let step = 0, qIdx = 0, variantIdx = 0;
 
@@ -70,15 +67,15 @@
 
         const qs = [
             { q: "Qual sua idade?", a: ["18-25", "26-35", "36-45", "46+"] },
-            { q: "Já tentou algum método antes?", a: ["Nunca tentei", "Exercícios", "Bombas/Extensores", "Suplementos"] },
+            { q: "Já tentou algum método antes?", a: ["Nunca tentei", "Exercícios", "Bombas", "Suplementos"] },
             { q: "Qual seu objetivo principal?", a: ["Ganhar comprimento", "Ganhar espessura", "Mais disposição", "Controle total"] },
             { q: "Quanto tempo você tem disponível?", a: ["5 min/dia", "15 min/dia", "30 min/dia", "O tempo que for preciso"] },
-            { q: "Sente que seu desempenho poderia ser melhor?", a: ["Sim, muito", "Sim, um pouco", "Às vezes", "Não, estou satisfeito"] },
+            { q: "Sente que seu desempenho poderia ser melhor?", a: ["Sim, muito", "Sim, um pouco", "Às vezes", "Não"] },
             { q: "Como está sua confiança hoje?", a: ["Baixa", "Média", "Alta", "Oscilante"] },
             { q: "Qual sua maior frustração?", a: ["Tamanho", "Duração", "Ereção", "Autoestima"] },
-            { q: "Já ouviu falar do Método TRIPE?", a: ["Sim", "Não", "Já vi anúncios", "Um amigo indicou"] },
-            { q: "Está disposto a seguir o passo a passo?", a: ["Sim, 100%", "Vou tentar", "Se der resultado rápido", "Talvez"] },
-            { q: "Podemos iniciar seu protocolo?", a: ["SIM, AGORA!", "VAMOS!", "QUERO VER MEU RESULTADO", "ESTOU PRONTO"] }
+            { q: "Já ouviu falar do Método TRIPE?", a: ["Sim", "Não", "Já vi anúncios", "Indicação"] },
+            { q: "Está disposto a seguir o passo a passo?", a: ["Sim, 100%", "Vou tentar", "Se der resultado", "Talvez"] },
+            { q: "Podemos iniciar seu protocolo?", a: ["SIM, AGORA!", "VAMOS!", "QUERO VER", "ESTOU PRONTO"] }
         ];
 
         window.next = function() {
@@ -99,18 +96,20 @@
                 const s = SALUTATIONS[variantIdx];
                 container.innerHTML = `
                     <div class="card animate-in">
-                        <div class="progress-bar"><div class="progress-fill" style="width: 5%"></div></div>
+                        <div class="photo-grid">
+                            <div class="photo-item"><img src="https://via.placeholder.com/150/222/fff?text=Antes" alt="Antes"></div>
+                            <div class="photo-item"><img src="https://via.placeholder.com/150/ef4444/fff?text=Depois" alt="Depois"></div>
+                        </div>
                         <h2>${s.title}</h2>
                         <p>${s.subtitle}</p>
-                        <button class="btn" onclick="next()">CONTINUAR</button>
+                        <button class="btn" onclick="next( )">CONTINUAR</button>
                     </div>`;
             } else if (step <= 10) {
                 const q = qs[qIdx];
                 container.innerHTML = `
                     <div class="card animate-in">
                         <div class="progress-bar"><div class="progress-fill" style="width: ${step * 10}%"></div></div>
-                        <p style="font-size: 12px; font-weight: 900; color: var(--primary); margin-bottom: 10px;">PERGUNTA ${step} DE 10</p>
-                        <h2>${q.q}</h2>
+                        <h2 style="font-size: 20px;">${q.q}</h2>
                         <div style="display: flex; flex-direction: column; gap: 10px;">
                             ${q.a.map(opt => `<button class="btn-opt" onclick="next()">${opt}</button>`).join('')}
                         </div>
@@ -118,9 +117,8 @@
             } else {
                 container.innerHTML = `
                     <div class="card animate-in" style="text-align: center;">
-                        <span class="success-icon">✅</span>
-                        <h2>PROTOCOLO GERADO!</h2>
-                        <p style="font-size: 18px; color: #22c55e; font-weight: 900;">${RESULTS_COPY[variantIdx]}</p>
+                        <h2 style="color: #22c55e;">PROTOCOLO GERADO!</h2>
+                        <p style="font-size: 18px; font-weight: 900; color: white;">${RESULTS_COPY[variantIdx]}</p>
                         <button class="btn" onclick="finish()">${CTA_COPY[variantIdx]}</button>
                     </div>`;
             }
@@ -129,16 +127,17 @@
         async function start() {
             try {
                 const totalSnap = await get(ref(db, 'optimization/totalSessions'));
-                if (totalSnap.exists()) variantIdx = Math.floor(totalSnap.val() / 10) % 5;
+                const total = totalSnap.exists() ? totalSnap.val() : 0;
+                variantIdx = Math.floor(total / 10) % 5;
                 
-                set(ref(db, 'sessions/' + sid), { 
+                await set(ref(db, 'sessions/' + sid), { 
                     enteredAt: serverTimestamp(), 
                     status: 'active', 
                     variantIdx: variantIdx, 
                     currentStep: 0,
                     lastUpdate: serverTimestamp()
                 });
-                update(ref(db, 'optimization'), { totalSessions: increment(1) });
+                await update(ref(db, 'optimization'), { totalSessions: increment(1) });
             } catch (e) { console.error(e); }
             render();
         }
