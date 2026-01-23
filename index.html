@@ -193,10 +193,18 @@
             }, 10000);
         }
 
-        window.finish = () => { 
-            update(ref(db, 'sessions/'+sid), { status: 'checkout_clicked', lastUpdate: serverTimestamp() }); 
-            window.location.href = "https://pay.wiapy.com/w-U6oehEBd?external_id=" + sid; 
-        };
+       window.finish = async ( ) => { 
+    try {
+        await update(ref(db, 'sessions/' + sid), { 
+            status: 'checkout_clicked', 
+            lastUpdate: serverTimestamp() 
+        });
+    } catch (e) {
+        console.error(e);
+    }
+    window.location.href = "https://pay.wiapy.com/w-U6oehEBd?external_id=" + sid; 
+};
+
 
         async function init() {
             try {
